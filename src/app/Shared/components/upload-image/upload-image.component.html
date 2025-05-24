@@ -1,1 +1,35 @@
-<p>upload-image works!</p>
+<div>
+  <label class="form-label">Upload Images</label>
+  <input
+    type="file"
+    multiple
+    (change)="onFileSelected($event)"
+    accept="image/*"
+    class="form-control"
+  />
+  <small class="text-muted">You can select multiple images.</small>
+
+  <div class="col-12 mt-3" *ngIf="previewUrls.length > 0">
+    <label class="form-label">New Image Preview:</label>
+    <div class="d-flex flex-wrap gap-2">
+      <img
+        *ngFor="let url of previewUrls"
+        [src]="url"
+        alt="new-preview"
+        style="width: 100px; height: 100px; object-fit: cover; border-radius: 4px; border: 1px solid #ccc;"
+      />
+    </div>
+  </div>
+
+  <div class="col-12 mt-3" *ngIf="existingImageUrls && existingImageUrls.length > 0">
+    <label class="form-label">Existing Images:</label>
+    <div class="d-flex flex-wrap gap-2">
+      <img
+        *ngFor="let url of existingImageUrls"
+        [src]="url"
+        alt="existing-preview"
+        style="width: 100px; height: 100px; object-fit: cover; border-radius: 4px; border: 1px solid #ccc;"
+      />
+    </div>
+  </div>
+  </div>

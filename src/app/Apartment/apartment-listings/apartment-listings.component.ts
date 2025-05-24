@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Apartment } from './../../core/models/apartment.model';
 import { ApartmentService } from '../../Shared/services/apartment.service';
 import { Router } from '@angular/router';
+import { environment } from '../../../environments/environment.production';
 
 @Component({
   selector: 'app-apartment-listings',
@@ -14,6 +15,7 @@ export class ApartmentListingsComponent implements OnInit {
   favoriteApartments: Apartment[] = [];
   showCarousel = false;
 
+  defaultImageUrl: string = environment.defaultApartmentImage;
   constructor(
     private apartmentService: ApartmentService,
     private router: Router
@@ -36,7 +38,7 @@ export class ApartmentListingsComponent implements OnInit {
 
         this.apartments = apts.map(apartment => ({
   ...apartment,
-  images: apartment.images && apartment.images.length ? apartment.images : ['https://via.placeholder.com/300x200'],
+  images: apartment.images && apartment.images.length ? apartment.images : [this.defaultImageUrl],
   isFavorite: apartment.isFavorite === true
 }));
 

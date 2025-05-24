@@ -3,7 +3,7 @@
     <div class="carousel-item" *ngFor="let apt of favoriteApartments">
       <div class="card">
         <img
-          [src]="apt.images[0]"
+          [src]="apt.images && apt.images[0] ? apt.images[0] :defaultImageUrl"
           [alt]="apt.title"
           class="card-image"
         />
@@ -28,7 +28,7 @@
 <div class="listing-grid">
   <div class="card" *ngFor="let apartment of apartments">
     <img
-      [src]="apartment.images[0]"
+      [src]="apartment.images && apartment.images[0] ? apartment.images[0] :defaultImageUrl"
       [alt]="apartment.title"
       class="card-image"
     />

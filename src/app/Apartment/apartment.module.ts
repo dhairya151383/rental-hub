@@ -1,41 +1,32 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatInputModule } from '@angular/material/input';
-import { MatRadioModule } from '@angular/material/radio';
-import { MatSelectModule } from '@angular/material/select';
-import { ApartmentDetailComponent } from './apartment-detail/apartment-detail.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { PostApartmentComponent } from './post-apartment/post-apartment.component';
-import { ApartmentRoutingModule } from './apartment-routing.module';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ApartmentCommentsComponent } from './apartment-comments/apartment-comments.component';
 import { ApartmentListingsComponent } from './apartment-listings/apartment-listings.component';
-
-
+import { ApartmentDetailComponent } from './apartment-detail/apartment-detail.component';
+import { ApartmentCommentsComponent } from './apartment-comments/apartment-comments.component';
+import { ApartmentRoutingModule } from './apartment-routing.module';
+import { SharedModule } from './../Shared/shared.module';
 
 @NgModule({
   declarations: [
-    ApartmentDetailComponent,
     PostApartmentComponent,
-    ApartmentCommentsComponent,
     ApartmentListingsComponent,
+    ApartmentDetailComponent,
+    ApartmentCommentsComponent,
   ],
   imports: [
     CommonModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatRadioModule,
-    MatCheckboxModule,
-    MatButtonModule,
-    MatCardModule,
-    ApartmentRoutingModule,
     ReactiveFormsModule,
-    FormsModule 
+    RouterModule,
+    ApartmentRoutingModule,
+    SharedModule
   ],
-  exports: [ ApartmentListingsComponent ,PostApartmentComponent, ApartmentDetailComponent, ApartmentCommentsComponent]
+  exports:[
+    ApartmentListingsComponent,
+    ApartmentDetailComponent,
+    ApartmentCommentsComponent,
+  ]
 })
 export class ApartmentModule { }

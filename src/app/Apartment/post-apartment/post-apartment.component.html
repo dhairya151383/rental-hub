@@ -179,41 +179,14 @@
         </mat-error>
       </mat-form-field>
     </div>
+
     <div class="col-12">
-      <label class="form-label">Upload Images</label>
-      <input
-        type="file"
-        multiple
-        (change)="onFileSelected($event)"
-        accept="image/*"
-        class="form-control"
-      />
-      <small class="text-muted">You can select multiple images.</small>
+      <app-upload-image
+        [existingImageUrls]="finalImageUrls"
+        (filesSelected)="onFilesSelected($event)"
+      ></app-upload-image>
     </div>
 
-    <div class="col-12 mt-3" *ngIf="selectedFiles.length > 0">
-      <label class="form-label">New Image Preview:</label>
-      <div class="d-flex flex-wrap gap-2">
-        <img
-          *ngFor="let file of selectedFiles"
-          [src]="URL.createObjectURL(file)"
-          alt="new-preview"
-          style="width: 100px; height: 100px; object-fit: cover; border-radius: 4px; border: 1px solid #ccc;"
-        />
-      </div>
-    </div>
-
-    <div class="col-12 mt-3" *ngIf="uploadedImageUrls && uploadedImageUrls.length > 0">
-      <label class="form-label">Existing Images:</label>
-      <div class="d-flex flex-wrap gap-2">
-        <img
-          *ngFor="let url of uploadedImageUrls"
-          [src]="url"
-          alt="existing-preview"
-          style="width: 100px; height: 100px; object-fit: cover; border-radius: 4px; border: 1px solid #ccc;"
-        />
-      </div>
-    </div>
     <div class="col-12 text-center">
       <button mat-raised-button color="primary" type="submit" class="me-2">Submit</button>
       <button mat-button type="button" (click)="onPreview()">Preview</button>

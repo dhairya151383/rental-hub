@@ -3,6 +3,7 @@ import { Subscription } from 'rxjs';
 import { ApartmentService } from '../../Shared/services/apartment.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Apartment } from './../../core/models/apartment.model';
+import { environment } from '../../../environments/environment.production';
 
 @Component({
   selector: 'app-apartment-detail',
@@ -14,7 +15,7 @@ export class ApartmentDetailComponent implements OnInit, OnDestroy {
   apartmentData: Apartment | any;
   private subscription: Subscription | undefined;
   currentImageIndex = 0;
-  defaultImageUrl: string = 'assets/images/default-apartment.png';
+  defaultImageUrl: string = environment.defaultApartmentImage;
   isFavorite: boolean = false;
   previousPage: 'dashboard' | 'listings' | null = null;
   activeTab: 'overview' | 'details' = 'overview'; // Initially show overview

@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormArray, FormControl } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { ApartmentService } from '../../Shared/services/apartment.service';
 import { Apartment } from './../../core/models/apartment.model';
-import { CloudinaryService } from '../../Shared/services/image-upload/cloudinary.service';
 import { getAuth, onAuthStateChanged } from '@angular/fire/auth';
+import { ApartmentService } from '../../Shared/services/apartment.service';
+import { CloudinaryService } from '../../Shared/services/image-upload/cloudinary.service';
 
 @Component({
   selector: 'app-post-apartment',
@@ -13,8 +13,7 @@ import { getAuth, onAuthStateChanged } from '@angular/fire/auth';
   styleUrls: ['./post-apartment.component.css']
 })
 export class PostApartmentComponent implements OnInit {
-  defaultImageUrl: string = 'assets/images/default-apartment.png';
-  URL = window.URL;
+  URL = window.URL; // For creating local object URLs for preview
   apartmentForm!: FormGroup;
   isPreview = false;
   previewApartmentData: any;
@@ -35,8 +34,10 @@ export class PostApartmentComponent implements OnInit {
     { name: 'Club House' }
   ];
 
-  selectedFiles: File[] = [];
-  uploadedImageUrls: string[] = [];
+  // This will hold the File objects selected by the user
+  selectedFilesToUpload: File[] = [];
+  // This will hold the Cloudinary URLs (either existing or newly uploaded)
+  finalImageUrls: string[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -62,6 +63,41 @@ export class PostApartmentComponent implements OnInit {
     });
   }
 
+  /**
+   * Initializes the apartment form with default values and validators.
+   */
+  initializeForm(): void {
+    this.apartmentForm = this.fb.group({
+      apartmentBuilding: [''],
+      apartmentBuildingName: [''],
+      isShared: [false, Validators.required],
+      propertyLocation: this.fb.group({
+        streetAddress: ['', Validators.required]
+      }),
+      propertyDetails: this.fb.group({
+        squareFeet: [null, [Validators.required, Validators.min(1)]],
+        leaseType: ['', Validators.required],
+        beds: [0, [Validators.required, Validators.min(0)]],
+        baths: [0, [Validators.required, Validators.min(0)]],
+      }),
+      expectedRent: this.fb.group({
+        expectedRent: [null, [Validators.required, Validators.min(1)]],
+        negotiable: [false],
+      }),
+      utilitiesIncluded: [false],
+      isFurnished: [false, Validators.required],
+      amenities: this.fb.array(this.allAmenities.map(() => this.fb.control(false))),
+      description: ['', [Validators.required, Validators.maxLength(1400)]],
+      title: ['', Validators.required],
+      images: [[]], // This form control will eventually hold the Cloudinary URLs
+      contactName: ['', Validators.required],
+      contactEmail: ['', [Validators.required, Validators.email]],
+    });
+  }
+
+  /**
+   * Populates the form fields if apartment data is available for editing (e.g., from preview).
+   */
   populateFormForEdit(): void {
     if (this.previewApartmentData) {
       this.apartmentForm.patchValue({
@@ -96,44 +132,25 @@ export class PostApartmentComponent implements OnInit {
         amenitiesArray.push(this.fb.control(isSelected));
       });
 
-      this.uploadedImageUrls = this.previewApartmentData.images || [];
+      // Set existing images for the UploadImageComponent
+      this.finalImageUrls = this.previewApartmentData.images || [];
       console.log('Populating form with:', this.previewApartmentData);
     }
   }
 
-  initializeForm(): void {
-    this.apartmentForm = this.fb.group({
-      apartmentBuilding: [''],
-      apartmentBuildingName: [''],
-      isShared: [false, Validators.required],
-      propertyLocation: this.fb.group({
-        streetAddress: ['', Validators.required]
-      }),
-      propertyDetails: this.fb.group({
-        squareFeet: [null, [Validators.required, Validators.min(1)]],
-        leaseType: ['', Validators.required],
-        beds: [0, [Validators.required, Validators.min(0)]],
-        baths: [0, [Validators.required, Validators.min(0)]],
-      }),
-      expectedRent: this.fb.group({
-        expectedRent: [null, [Validators.required, Validators.min(1)]],
-        negotiable: [false],
-      }),
-      utilitiesIncluded: [false],
-      isFurnished: [false, Validators.required],
-      amenities: this.fb.array(this.allAmenities.map(() => this.fb.control(false))),
-      description: ['', [Validators.required, Validators.maxLength(1400)]],
-      title: ['', Validators.required],
-      images: [[]],
-      contactName: ['', Validators.required],
-      contactEmail: ['', [Validators.required, Validators.email]],
-    });
-  }
-
+  /**
+   * Getter for the amenities FormArray.
+   */
   get amenitiesFormArray(): FormArray {
     return this.apartmentForm.get('amenities') as FormArray;
   }
 
+  /**
+   * Helper to get a FormControl from the main form or a FormGroup within it.
+   * @param controlName The name of the form control.
+   * @param groupName (Optional) The name of the FormGroup if the control is nested.
+   * @returns The FormControl or null if not found.
+   */
   getFormControl(controlName: string, groupName?: string): FormControl | null {
     if (groupName) {
       const group = this.apartmentForm.get(groupName);
@@ -147,6 +164,9 @@ export class PostApartmentComponent implements OnInit {
     return control instanceof FormControl ? control : null;
   }
 
+  /**
+   * Returns a comma-separated string of selected amenity names.
+   */
   getSelectedAmenities(): string {
     return this.allAmenities
       .filter((_, i) => this.amenitiesFormArray.at(i).value)
@@ -154,33 +174,51 @@ export class PostApartmentComponent implements OnInit {
       .join(', ');
   }
 
+  /**
+   * Gets a specific amenity FormControl by its index.
+   * @param index The index of the amenity in the FormArray.
+   * @returns The FormControl for the amenity.
+   */
   getAmenityControl(index: number): FormControl {
     return this.amenitiesFormArray.at(index) as FormControl;
   }
 
-  onFileSelected(event: any): void {
-    if (event.target.files && event.target.files.length > 0) {
-      this.selectedFiles = [];
-      for (let i = 0; i < event.target.files.length; i++) {
-        this.selectedFiles.push(event.target.files[i]);
-      }
-    }
+  /**
+   * Callback for when files are selected in the UploadImageComponent.
+   * Updates the `selectedFilesToUpload` array.
+   * @param files The array of File objects emitted by UploadImageComponent.
+   */
+  onFilesSelected(files: File[]): void {
+    this.selectedFilesToUpload = files;
+    console.log('Files selected for upload:', this.selectedFilesToUpload);
   }
 
+  /**
+   * Uploads the selected files to Cloudinary.
+   * @returns A Promise that resolves with an array of uploaded image URLs.
+   */
   async uploadImages(): Promise<string[]> {
     const uploadedUrls: string[] = [];
-    for (const file of this.selectedFiles) {
+    for (const file of this.selectedFilesToUpload) {
       try {
-        const url = await this.cloudinaryService.uploadImage(file).toPromise();
-        uploadedUrls.push(url.secure_url);
+        const urlResponse = await this.cloudinaryService.uploadImage(file).toPromise();
+        if (urlResponse && urlResponse.secure_url) {
+          uploadedUrls.push(urlResponse.secure_url);
+        } else {
+          console.warn('Cloudinary upload response missing secure_url:', urlResponse);
+        }
       } catch (error) {
         console.error('Error uploading image:', error);
-        throw error;
+        throw error; // Re-throw to propagate the error
       }
     }
     return uploadedUrls;
   }
 
+  /**
+   * Handles the "Preview" button click.
+   * Prepares apartment data for preview, including local image URLs if new files are selected.
+   */
   async onPreview(): Promise<void> {
     console.log('Preview button clicked');
     if (this.apartmentForm.invalid) {
@@ -188,18 +226,16 @@ export class PostApartmentComponent implements OnInit {
       return;
     }
 
-    try {
-      if (this.selectedFiles.length) {
-        this.uploadedImageUrls = await this.uploadImages();
-      }
-    } catch (err) {
-      console.error('Preview image upload failed:', err);
-      return;
-    }
-
     const formValue = this.apartmentForm.value;
     const selectedAmenities = this.getSelectedAmenities().split(', ');
-    const previewImages = this.uploadedImageUrls.length > 0 ? this.uploadedImageUrls : [this.defaultImageUrl];
+
+    // Determine images for preview:
+    // 1. If new files are selected, use their local object URLs.
+    // 2. Otherwise, use existing Cloudinary URLs.
+    // 3. If neither, use the default image.
+    const previewImages = this.selectedFilesToUpload.length > 0
+      ? this.selectedFilesToUpload.map(file => this.URL.createObjectURL(file))
+      : (this.finalImageUrls.length > 0 ? this.finalImageUrls : []);
 
     this.previewApartmentData = {
       ...formValue,
@@ -208,7 +244,6 @@ export class PostApartmentComponent implements OnInit {
       isFurnished: formValue.isFurnished,
       utilitiesIncluded: formValue.utilitiesIncluded,
       images: previewImages,
-      // Include contact details for preview if needed
       contactName: formValue.contactName,
       contactEmail: formValue.contactEmail,
     };
@@ -217,28 +252,40 @@ export class PostApartmentComponent implements OnInit {
     this.router.navigate(['/apartment/apartment-detail'], { state: { apartmentData: this.previewApartmentData }, queryParams: { fromPreview: true } });
   }
 
+  /**
+   * Handles the form submission.
+   * Uploads images to Cloudinary if new files are selected, then submits apartment data.
+   */
   async onSubmit(): Promise<void> {
     if (this.apartmentForm.invalid) {
       this.apartmentForm.markAllAsTouched();
       return;
     }
 
-    try {
-      if (this.selectedFiles.length) {
-        this.uploadedImageUrls = await this.uploadImages();
+    let imagesForSubmission: string[] = [...this.finalImageUrls]; // Start with existing images
+
+    // If new files are selected, upload them and add to the list
+    if (this.selectedFilesToUpload.length > 0) {
+      try {
+        const newlyUploadedUrls = await this.uploadImages();
+        imagesForSubmission = [...imagesForSubmission, ...newlyUploadedUrls];
+      } catch (err) {
+        console.error('Submission image upload failed:', err);
+        // Optionally show an error message to the user
+        return; // Stop submission if upload fails
       }
-    } catch (err) {
-      console.error('Submission image upload failed:', err);
-      return;
     }
 
-    const finalImages = this.uploadedImageUrls.length > 0 ? this.uploadedImageUrls : [this.defaultImageUrl];
+    // If no images (existing or new), use the default image
+    if (imagesForSubmission.length === 0) {
+      imagesForSubmission = [];
+    }
 
     const formData: Apartment = {
       ...this.apartmentForm.value,
       apartmentBuilding: this.apartmentForm.value.apartmentBuildingName || this.apartmentForm.value.apartmentBuilding,
       amenities: this.getSelectedAmenities().split(', '),
-      images: finalImages,
+      images: imagesForSubmission, // Use the final list of Cloudinary URLs
     };
 
     this.apartmentService.addApartment(formData).subscribe({
@@ -248,14 +295,18 @@ export class PostApartmentComponent implements OnInit {
       },
       error: (err) => {
         console.error('Failed to submit apartment:', err);
+        // Optionally show an error message to the user
       }
     });
   }
 
+  /**
+   * Resets the form and image related state.
+   */
   resetForm(): void {
     this.apartmentForm.reset();
-    this.selectedFiles = [];
-    this.uploadedImageUrls = [];
+    this.selectedFilesToUpload = [];
+    this.finalImageUrls = [];
 
     // Reset amenity checkboxes
     const amenitiesArray = this.apartmentForm.get('amenities') as FormArray;

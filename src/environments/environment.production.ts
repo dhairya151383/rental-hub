@@ -10,7 +10,8 @@ export const environment = {
     measurementId: "G-J18QH43ZRX"
   },
   cloudName: 'dzinsxvvw',
-  uploadPreset: 'dhairya_preset'
+  uploadPreset: 'dhairya_preset',
+  defaultApartmentImage: 'assets/images/default-apartment.png'
 
 };;
 
