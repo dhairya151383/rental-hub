@@ -4,7 +4,6 @@ import { PostApartmentComponent } from './post-apartment/post-apartment.componen
 import { ApartmentDetailComponent } from './apartment-detail/apartment-detail.component';
 import { ApartmentCommentsComponent } from './apartment-comments/apartment-comments.component';
 import { ApartmentListingsComponent } from './apartment-listings/apartment-listings.component';
-import { AuthGuard } from '../Service/auth-guard/auth.guard';
 
 const routes: Routes = [
   { path: 'apartment-listings', component: ApartmentListingsComponent },

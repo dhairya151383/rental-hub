@@ -1,8 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { ApartmentService } from '../../Service/apartment.service';
+import { ApartmentService } from '../../Shared/services/apartment.service';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Apartment } from '../../model/apartment.model';
+import { Apartment } from './../../core/models/apartment.model';
 
 @Component({
   selector: 'app-apartment-detail',

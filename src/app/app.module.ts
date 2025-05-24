@@ -16,11 +16,13 @@ import { environment } from '../environments/environment.production';
 import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
 import { provideAuth, getAuth } from '@angular/fire/auth';
 import { provideFirestore, getFirestore } from '@angular/fire/firestore';
+import { UploadImageComponent } from './Shared/components/upload-image/upload-image.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     DashboardComponent,
+    UploadImageComponent,
   ],
   imports: [
     CommonModule,

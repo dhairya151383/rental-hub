@@ -1,11 +1,9 @@
-// src/app/apartment/apartment-comments/apartment-comments.component.ts
 import { Component, OnInit, OnDestroy, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { Observable, Subscription, of } from 'rxjs';
-import { Comment } from './../../model/comment.model';
+import { Comment } from './../../core/models/comment.model';
 import { Timestamp } from 'firebase/firestore';
-import { CommentService } from '../../Service/comment.service';
-import { AuthService } from '../../Service/auth.service'; // Import AuthService
-import { switchMap } from 'rxjs/operators';
+import { CommentService } from '../../Shared/services/comment.service';
+import { AuthService } from '../../Shared/services/auth.service'; // Import AuthService
 
 @Component({
   selector: 'app-apartment-comments',

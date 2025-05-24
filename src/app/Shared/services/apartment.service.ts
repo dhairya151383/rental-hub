@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Apartment } from './../model/apartment.model';
+import { Apartment } from './../../core/models/apartment.model';
 import { BehaviorSubject, Observable, from, throwError } from 'rxjs';
 import { Firestore, collection, addDoc, collectionData, doc, updateDoc } from '@angular/fire/firestore';
 import { CollectionReference, DocumentData } from 'firebase/firestore';

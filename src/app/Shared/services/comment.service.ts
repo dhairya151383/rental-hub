@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, map } from 'rxjs';
-import { Comment } from './../model/comment.model';
+import { Comment } from './../../core/models/comment.model';
 import { Firestore, collection, addDoc, collectionData, query, where, orderBy, Timestamp } from '@angular/fire/firestore';
 
 @Injectable({

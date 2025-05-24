@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormArray, FormControl } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { ApartmentService } from '../../Service/apartment.service';
-import { Apartment } from '../../model/apartment.model';
-import { CloudinaryService } from '../../Service/image-upload/cloudinary.service';
+import { ApartmentService } from '../../Shared/services/apartment.service';
+import { Apartment } from './../../core/models/apartment.model';
+import { CloudinaryService } from '../../Shared/services/image-upload/cloudinary.service';
 import { getAuth, onAuthStateChanged } from '@angular/fire/auth';
 
 @Component({
