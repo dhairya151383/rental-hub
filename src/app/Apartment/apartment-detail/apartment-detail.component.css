@@ -1,0 +1,261 @@
+.apartment-detail-container {
+  padding: 20px;
+  font-family: sans-serif;
+}
+
+.image-carousel {
+  position: relative;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.main-image {
+  width: 100%;
+  max-height: 500px;
+  object-fit: cover;
+  display: block;
+}
+
+.carousel-control {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 2em;
+  color: white;
+  opacity: 0.7;
+  cursor: pointer;
+  padding: 10px;
+  z-index: 10;
+}
+
+.carousel-control.prev {
+  left: 10px;
+}
+
+.carousel-control.next {
+  right: 10px;
+}
+
+.thumbnail-strip {
+  display: flex;
+  gap: 5px;
+  margin-top: 10px;
+  overflow-x: auto;
+}
+
+.thumbnail {
+  width: 80px;
+  height: 60px;
+  object-fit: cover;
+  cursor: pointer;
+  border-radius: 4px;
+  opacity: 0.7;
+  border: 2px solid transparent;
+}
+
+.thumbnail.active {
+  opacity: 1;
+  border-color: #007bff; /* Example active border color */
+}
+
+.details-header {
+  margin-bottom: 15px;
+}
+
+.title {
+  font-size: 2em;
+  margin-bottom: 5px;
+}
+
+.price {
+  font-size: 1.5em;
+  color: #007bff; /* Example price color */
+  margin-bottom: 5px;
+}
+
+.per-month {
+  font-size: 0.8em;
+  color: #555;
+}
+
+.location {
+  color: #555;
+  margin-bottom: 10px;
+}
+
+.location i {
+  margin-right: 5px;
+}
+
+.details-overview {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.overview-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #333;
+}
+
+.overview-item i {
+  font-size: 1.2em;
+}
+
+.amenities-section {
+  margin-bottom: 20px;
+}
+
+.section-title {
+  font-size: 1.3em;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 5px;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.contact-agent-button,
+.book-button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+}
+
+.contact-agent-button {
+  background-color: #6c757d; /* Example contact button color */
+}
+
+.book-button {
+  background-color: #007bff; /* Example book button color */
+}
+
+.back-button {
+  margin-top: 20px;
+}
+
+.favorite-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 1.8em;
+  color: #f44336; /* Example favorite color */
+  cursor: pointer;
+  z-index: 20;
+  padding: 5px;
+}
+
+.favorite-icon:hover {
+  opacity: 0.8;
+}
+
+.header {
+  margin-bottom: 15px;
+}
+
+.image-section {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.favorite-icon {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: none;
+  border: none;
+  font-size: 1.8em;
+  color: #f44336;
+  cursor: pointer;
+  z-index: 20;
+  padding: 5px;
+}
+
+.favorite-icon:hover {
+  opacity: 0.8;
+}
+
+.image-carousel {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.overview-badges {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.badge {
+  background-color: #f0f0f0;
+  color: #333;
+  padding: 8px 12px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.9em;
+}
+
+.badge i {
+  font-size: 1em;
+}
+
+.price {
+  font-size: 1.8em;
+  color: #007bff;
+  margin-top: 10px;
+}
+
+.per-month {
+  font-size: 0.8em;
+  color: #555;
+}
+
+.tab-navigation {
+  display: flex;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.tab-navigation button {
+  background: none;
+  border: none;
+  padding: 10px 15px;
+  font-size: 1em;
+  cursor: pointer;
+  color: #555;
+}
+
+.tab-navigation button.active {
+  color: #007bff;
+  border-bottom: 2px solid #007bff;
+}
+
+.tab-content {
+  padding: 15px 0;
+}
+
+.tab-content h3.section-title {
+  font-size: 1.2em;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 5px;
+}
+
+.tab-content p {
+  line-height: 1.6;
+}

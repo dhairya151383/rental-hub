@@ -1,0 +1,88 @@
+<div class="container">
+  <div class="row justify-content-md-center mt-5">
+    <div class="col-12 col-md-6 col-lg-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title mb-4 text-center">Register</h5>
+          <form [formGroup]="registerForm" (ngSubmit)="registerAction()">
+
+            <div class="mb-3">
+              <label for="email" class="form-label">Email address</label>
+              <input id="email" type="email" formControlName="email" name="email" autocomplete="email"
+                class="form-control" />
+              <div *ngIf="registerForm.get('email')?.touched && registerForm.get('email')?.hasError('required')">
+                <small class="text-danger">Email is required</small>
+              </div>
+              <div *ngIf="registerForm.get('email')?.touched && registerForm.get('email')?.hasError('email')">
+                <small class="text-danger">Email must be a valid Email</small>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="username" class="form-label">Username</label>
+              <input id="username" name="username" autocomplete="username" type="text" formControlName="username"
+                class="form-control" />
+              <div *ngIf="registerForm.get('username')?.touched && registerForm.get('username')?.hasError('required')">
+                <small class="text-danger">Username is required</small>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="firstname" class="form-label">First Name</label>
+              <input id="firstname" type="text" name="firstname" autocomplete="given-name" formControlName="firstname"
+                class="form-control" />
+              <div
+                *ngIf="registerForm.get('firstname')?.touched && registerForm.get('firstname')?.hasError('required')">
+                <small class="text-danger">First Name is required</small>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="lastname" class="form-label">Last Name</label>
+              <input id="lastname" type="text" name="lastname" autocomplete="family-name" formControlName="lastname"
+                class="form-control" />
+              <div *ngIf="registerForm.get('lastname')?.touched && registerForm.get('lastname')?.hasError('required')">
+                <small class="text-danger">Last Name is required</small>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input id="password" type="password" name="password" autocomplete="new-password" formControlName="password"
+                class="form-control" />
+              <div *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.hasError('required')">
+                <small class="text-danger">Password is required</small>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="passwordConfirm" class="form-label">Confirm Password</label>
+              <input id="passwordConfirm" type="password" name="passwordConfirm" autocomplete="new-password"
+                formControlName="passwordConfirm" class="form-control" />
+              <div *ngIf="registerForm.get('passwordConfirm')?.dirty && registerForm.hasError('passwordsNotMatching')">
+                <small class="text-danger">Passwords are not matching!</small>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="role" class="form-label">Role</label>
+              <select id="role" name="role" formControlName="role" class="form-select" autocomplete="off">
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+
+            <div class="d-grid gap-2">
+              <button [disabled]="!registerForm.valid" type="submit" class="btn btn-primary">Register Now</button>
+              <p class="text-center mt-2">
+                Already have an account?
+                <a [routerLink]="['../login']">Login here</a>
+              </p>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

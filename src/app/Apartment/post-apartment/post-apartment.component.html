@@ -1,0 +1,222 @@
+<div class="container mt-5">
+  <h1 class="mb-4">Create New Post</h1>
+
+  <form *ngIf="apartmentForm" [formGroup]="apartmentForm" (ngSubmit)="onSubmit()" class="row g-3">
+    <div class="col-md-6">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Choose your Apartment/Building</mat-label>
+        <mat-select formControlName="apartmentBuilding">
+          <mat-option *ngFor="let building of apartmentBuildings" [value]="building">
+            {{ building }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="getFormControl('apartmentBuilding')?.invalid">
+          Apartment/Building is required.
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="col-md-6">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Enter the name of your</mat-label>
+        <input matInput formControlName="apartmentBuildingName" />
+      </mat-form-field>
+    </div>
+
+    <div class="col-12">
+      <label class="form-label">Is this a shared property?</label>
+      <mat-radio-group formControlName="isShared" class="d-flex">
+        <mat-radio-button value="true" class="me-2">Yes</mat-radio-button>
+        <mat-radio-button value="false">No</mat-radio-button>
+      </mat-radio-group>
+    </div>
+
+    <div class="col-12" formGroupName="propertyLocation">
+      <label class="form-label">Property Location</label>
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Street Address</mat-label>
+        <input matInput formControlName="streetAddress" />
+        <mat-error *ngIf="getFormControl('streetAddress', 'propertyLocation')?.invalid">
+          Street Address is required.
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="col-md-3" formGroupName="propertyDetails">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>No. of Beds</mat-label>
+        <input matInput type="number" formControlName="beds" min="0" />
+        <mat-error *ngIf="getFormControl('beds', 'propertyDetails')?.errors?.['required']">
+          Number of beds is required.
+        </mat-error>
+        <mat-error *ngIf="getFormControl('beds', 'propertyDetails')?.errors?.['min']">
+          Number of beds must be at least 0.
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="col-md-3" formGroupName="propertyDetails">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>No. of Baths</mat-label>
+        <input matInput type="number" formControlName="baths" min="0" />
+        <mat-error *ngIf="getFormControl('baths', 'propertyDetails')?.errors?.['required']">
+          Number of baths is required.
+        </mat-error>
+        <mat-error *ngIf="getFormControl('baths', 'propertyDetails')?.errors?.['min']">
+          Number of baths must be at least 0.
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="col-md-3" formGroupName="propertyDetails">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Square Feet</mat-label>
+        <input matInput type="number" formControlName="squareFeet" min="1" />
+        <mat-error *ngIf="getFormControl('squareFeet', 'propertyDetails')?.errors?.['required']">
+          Square Feet is required.
+        </mat-error>
+        <mat-error *ngIf="getFormControl('squareFeet', 'propertyDetails')?.errors?.['min']">
+          Square Feet must be greater than 0.
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="col-md-3" formGroupName="propertyDetails">
+      <label class="form-label">Stay / Lease type</label>
+      <mat-radio-group formControlName="leaseType" class="d-flex flex-column">
+        <mat-radio-button value="Long term (6+ months)" class="mb-1">Long term (6+ months)</mat-radio-button>
+        <mat-radio-button value="Short term" class="mb-1">Short term</mat-radio-button>
+      </mat-radio-group>
+      <mat-error
+        *ngIf="getFormControl('leaseType', 'propertyDetails')?.invalid && getFormControl('leaseType', 'propertyDetails')?.touched">
+        Lease Type is required.
+      </mat-error>
+    </div>
+
+    <div class="col-md-4" formGroupName="expectedRent">
+      <label class="form-label">Expected Rent (/ per month)</label>
+      <mat-form-field appearance="outline" class="w-100">
+        <input matInput type="number" formControlName="expectedRent" min="1" />
+        <mat-error *ngIf="getFormControl('expectedRent', 'expectedRent')?.errors?.['required']">
+          Expected Rent is required.
+        </mat-error>
+        <mat-error *ngIf="getFormControl('expectedRent', 'expectedRent')?.errors?.['min']">
+          Expected Rent must be greater than 0.
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label mt-2">Utilities included in rent</label>
+      <mat-checkbox formControlName="utilitiesIncluded">Yes</mat-checkbox>
+    </div>
+
+    <div class="col-md-4" formGroupName="expectedRent">
+      <mat-checkbox formControlName="negotiable">Negotiable</mat-checkbox>
+    </div>
+
+    <div class="col-12">
+      <label class="form-label">Is the room/apartment furnished?</label>
+      <mat-radio-group formControlName="isFurnished" class="d-flex">
+        <mat-radio-button value="true" class="me-2">Yes</mat-radio-button>
+        <mat-radio-button value="false">No</mat-radio-button>
+      </mat-radio-group>
+    </div>
+
+    <div class="col-12">
+      <label class="form-label">Amenities included</label>
+      <div class="row">
+        <div class="col-md-3 col-sm-6" *ngFor="let amenity of allAmenities; let i = index">
+          <mat-checkbox [formControl]="getAmenityControl(i)">
+            {{ amenity.name }}
+          </mat-checkbox>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Contact Name</mat-label>
+        <input matInput formControlName="contactName" required />
+        <mat-error *ngIf="getFormControl('contactName')?.invalid">
+          Contact Name is required.
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="col-md-6">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Contact Email</mat-label>
+        <input matInput formControlName="contactEmail" [email]="true" required />
+        <mat-error *ngIf="getFormControl('contactEmail')?.hasError('required')">
+          Contact Email is required.
+        </mat-error>
+        <mat-error *ngIf="getFormControl('contactEmail')?.hasError('email')">
+          Please enter a valid email address.
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="col-12">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Title</mat-label>
+        <input matInput formControlName="title" required />
+        <mat-error *ngIf="getFormControl('title')?.invalid">
+          Title is required.
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="col-12">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Description (Max 1400 characters)</mat-label>
+        <textarea matInput formControlName="description" maxlength="1400"></textarea>
+        <mat-error *ngIf="getFormControl('description')?.errors?.['required']">
+          Description is required.
+        </mat-error>
+        <mat-error *ngIf="getFormControl('description')?.errors?.['maxlength']">
+          Description cannot exceed 1400 characters.
+        </mat-error>
+      </mat-form-field>
+    </div>
+    <div class="col-12">
+      <label class="form-label">Upload Images</label>
+      <input
+        type="file"
+        multiple
+        (change)="onFileSelected($event)"
+        accept="image/*"
+        class="form-control"
+      />
+      <small class="text-muted">You can select multiple images.</small>
+    </div>
+
+    <div class="col-12 mt-3" *ngIf="selectedFiles.length > 0">
+      <label class="form-label">New Image Preview:</label>
+      <div class="d-flex flex-wrap gap-2">
+        <img
+          *ngFor="let file of selectedFiles"
+          [src]="URL.createObjectURL(file)"
+          alt="new-preview"
+          style="width: 100px; height: 100px; object-fit: cover; border-radius: 4px; border: 1px solid #ccc;"
+        />
+      </div>
+    </div>
+
+    <div class="col-12 mt-3" *ngIf="uploadedImageUrls && uploadedImageUrls.length > 0">
+      <label class="form-label">Existing Images:</label>
+      <div class="d-flex flex-wrap gap-2">
+        <img
+          *ngFor="let url of uploadedImageUrls"
+          [src]="url"
+          alt="existing-preview"
+          style="width: 100px; height: 100px; object-fit: cover; border-radius: 4px; border: 1px solid #ccc;"
+        />
+      </div>
+    </div>
+    <div class="col-12 text-center">
+      <button mat-raised-button color="primary" type="submit" class="me-2">Submit</button>
+      <button mat-button type="button" (click)="onPreview()">Preview</button>
+    </div>
+  </form>
+</div>

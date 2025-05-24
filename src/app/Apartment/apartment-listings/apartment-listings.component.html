@@ -1,0 +1,47 @@
+<div class="carousel-container" *ngIf="showCarousel">
+  <div class="carousel">
+    <div class="carousel-item" *ngFor="let apt of favoriteApartments">
+      <div class="card">
+        <img
+          [src]="apt.images[0]"
+          [alt]="apt.title"
+          class="card-image"
+        />
+        <button (click)="markAsFavorite(apt)" class="favorite-icon" [title]="apt.isFavorite ? 'Unmark Favorite' : 'Mark as Favorite'">
+          <i [class]="apt.isFavorite ? 'fas fa-heart' : 'far fa-heart'"></i>
+        </button>
+        <div class="card-info">
+          <h3>
+            <a (click)="viewDetails(apt)" style="cursor: pointer;">{{ apt.title }}</a>
+          </h3>
+          <p>{{ apt.propertyLocation.streetAddress }}</p>
+          <p>${{ apt.expectedRent.expectedRent }}/month</p>
+          <p>{{ apt.propertyDetails.squareFeet }} Sqft</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h2 *ngIf="!showCarousel">All Listings</h2>
+
+<div class="listing-grid">
+  <div class="card" *ngFor="let apartment of apartments">
+    <img
+      [src]="apartment.images[0]"
+      [alt]="apartment.title"
+      class="card-image"
+    />
+    <button (click)="markAsFavorite(apartment)" class="favorite-icon" [title]="apartment.isFavorite ? 'Unmark Favorite' : 'Mark as Favorite'">
+      <i [class]="apartment.isFavorite ? 'fas fa-heart' : 'far fa-heart'"></i>
+    </button>
+    <div class="card-info">
+      <h4>
+        <a (click)="viewDetails(apartment)" style="cursor: pointer;">{{ apartment.title }}</a>
+      </h4>
+      <p>{{ apartment.propertyLocation.streetAddress }}</p>
+      <p>${{ apartment.expectedRent.expectedRent }}/month</p>
+      <p>{{ apartment.propertyDetails.squareFeet }} Sqft</p>
+    </div>
+  </div>
+</div>
