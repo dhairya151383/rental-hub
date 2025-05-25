@@ -53,10 +53,15 @@ export class NavbarComponent implements OnInit, OnDestroy {
       });
   }
 
-  logout() {
-    this.authService.logout();
+  async logout() {
+  try {
+    await this.authService.logout();
     this.router.navigate(['/login']);
+  } catch (err) {
+    console.error('Logout failed:', err);
   }
+}
+
 
   goToPost() {
     this.router.navigate(['/apartment/post-apartment']);

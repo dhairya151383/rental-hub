@@ -212,6 +212,6 @@ export class PostApartmentComponent implements OnInit {
     };
 
     this.apartmentService.addApartment(formData);
-    this.router.navigate(['/listings']);
+    this.router.navigate(['/dashboard']);
   }
 }

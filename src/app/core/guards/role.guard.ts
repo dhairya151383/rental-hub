@@ -1,23 +1,29 @@
-import { CanActivateFn } from '@angular/router';
-import { inject } from '@angular/core';
-import { AuthService } from './../../Shared/services/auth.service';
-import { Router } from '@angular/router';
+import { Injectable } from '@angular/core';
+import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
-import { map, take } from 'rxjs/operators';
+import { map, take, catchError } from 'rxjs/operators';
+import { AuthService } from './../../Shared/services/auth.service';
 
-export function RoleGuard(allowedRoles: string[]): CanActivateFn {
-  return (): Observable<boolean> => {
-    const authService = inject(AuthService);
-    const router = inject(Router);
-    return authService.getCurrentUserWithRole().pipe(
-      take(1), // Take only the first emission and then complete
+@Injectable({ providedIn: 'root' })
+export class RoleGuard implements CanActivate {
+  constructor(private authService: AuthService, private router: Router) {}
+
+  canActivate(route: ActivatedRouteSnapshot): Observable<boolean> {
+    const expectedRole = route.data['expectedRole'];
+    return this.authService.getCurrentUserWithRole().pipe(
+      take(1),
       map(user => {
-        if (!user || !allowedRoles.includes(user.role)) {
-          router.navigate(['/unauthorized']);
+        if (user && user.role === expectedRole) {
+          return true;
+        } else {
+          this.router.navigate(['/unauthorized']);
           return false;
         }
-        return true;
+      }),
+      catchError(() => {
+        this.router.navigate(['/unauthorized']);
+        return of(false);
       })
     );
-  };
+  }
 }
