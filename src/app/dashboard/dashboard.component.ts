@@ -1,20 +1,22 @@
 import { Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
+import { NavService } from './../Shared/services/nav.service';
+
 @Component({
   selector: 'app-dashboard',
   standalone: false,
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit {
 
   constructor(
-    private router: Router
+    private router: Router,
+    private navService: NavService
   ) {}
 
-  logout() {
-    // Removes the jwt token from the local storage, so the user gets logged out & then navigate back to the "public" routes
-    this.router.navigate(['../../']);
+  ngOnInit() {
+    this.navService.setBreadcrumbs([]);
+    this.navService.setShowPostButton(true); 
   }
-
 }

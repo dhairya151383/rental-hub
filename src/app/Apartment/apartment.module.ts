@@ -25,7 +25,6 @@ import { SharedModule } from './../Shared/shared.module';
   ],
   exports:[
     ApartmentListingsComponent,
-    ApartmentDetailComponent,
     ApartmentCommentsComponent,
   ]
 })

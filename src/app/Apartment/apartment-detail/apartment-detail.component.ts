@@ -4,12 +4,13 @@ import { ApartmentService } from '../../Shared/services/apartment.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Apartment } from './../../core/models/apartment.model';
 import { environment } from '../../../environments/environment.production';
+import { NavService } from '../../Shared/services/nav.service';
 
 @Component({
   selector: 'app-apartment-detail',
   standalone: false,
   templateUrl: './apartment-detail.component.html',
-  styleUrl: './apartment-detail.component.css'
+  styleUrls: ['./apartment-detail.component.css']
 })
 export class ApartmentDetailComponent implements OnInit, OnDestroy {
   apartmentData: Apartment | any;
@@ -17,34 +18,42 @@ export class ApartmentDetailComponent implements OnInit, OnDestroy {
   currentImageIndex = 0;
   defaultImageUrl: string = environment.defaultApartmentImage;
   isFavorite: boolean = false;
-  previousPage: 'dashboard' | 'listings' | null = null;
+
+  // This keeps track of where user came from for breadcrumb/navigation logic
+  previousPage: 'dashboard' | 'postApartment' | null = null;
   activeTab: 'overview' | 'details' = 'overview'; // Initially show overview
 
   constructor(
     private apartmentService: ApartmentService,
     private router: Router,
-    private route: ActivatedRoute
-  ) { }
+    private route: ActivatedRoute,
+    private navService:NavService
+  ) {}
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
-      const fromPreview = params['fromPreview'];
-      const fromListing = params['fromListing'];
-      if (fromPreview === 'true') {
-        this.previousPage = 'dashboard';
-      } else if (fromListing === 'true') {
-        this.previousPage = 'listings';
+      // Detect the page user came from via query params
+      // If navigated from post-apartment, param fromPostApartment=true will be set
+      if (params['fromPostApartment'] === 'true') {
+        this.previousPage = 'postApartment';
       } else {
+        // Default to dashboard if no specific param
         this.previousPage = 'dashboard';
       }
     });
 
+    // Subscribe to the apartment data observable
     this.subscription = this.apartmentService.currentApartmentData.subscribe(data => {
       this.apartmentData = data;
       if (this.apartmentData) {
         this.isFavorite = this.apartmentData.isFavorite || false;
       }
     });
+    if (this.previousPage === 'postApartment') {
+    this.navService.setBreadcrumbs(['Post', 'Detail']);
+  } else {
+    this.navService.setBreadcrumbs(['Detail']);
+  }
   }
 
   ngOnDestroy(): void {
@@ -61,10 +70,12 @@ export class ApartmentDetailComponent implements OnInit, OnDestroy {
   }
 
   goBack(): void {
-    if (this.previousPage === 'listings') {
-      this.router.navigate(['/dashboard']);
+    if (this.previousPage === 'postApartment') {
+      // When coming from post-apartment, navigate back passing data and showing dashboard/post/detail breadcrumb
+      this.router.navigate(['/apartment/post-apartment'], { state: { returnFromPost: true, apartmentData: this.apartmentData } });
     } else {
-      this.router.navigate(['/apartment/post-apartment'], { state: { apartmentData: this.apartmentData } });
+      // Otherwise just go to dashboard, dashboard/detail breadcrumb only
+      this.router.navigate(['/dashboard']);
     }
   }
 

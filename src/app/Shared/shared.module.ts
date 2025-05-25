@@ -8,10 +8,12 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
 import { UploadImageComponent } from './components/upload-image/upload-image.component';
+import { NavbarComponent } from './components/navbar/navbar.component';
 
 @NgModule({
   declarations: [
     UploadImageComponent,
+    NavbarComponent,
   ],
   imports: [
     CommonModule,
@@ -35,6 +37,7 @@ import { UploadImageComponent } from './components/upload-image/upload-image.com
     MatCheckboxModule,
     MatButtonModule,
     UploadImageComponent,
+    NavbarComponent
   ]
 })
 export class SharedModule { }
