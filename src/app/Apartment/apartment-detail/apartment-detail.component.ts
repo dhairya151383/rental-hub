@@ -70,14 +70,18 @@ export class ApartmentDetailComponent implements OnInit, OnDestroy {
   }
 
   goBack(): void {
-    if (this.previousPage === 'postApartment') {
-      // When coming from post-apartment, navigate back passing data and showing dashboard/post/detail breadcrumb
-      this.router.navigate(['/apartment/post-apartment'], { state: { returnFromPost: true, apartmentData: this.apartmentData } });
-    } else {
-      // Otherwise just go to dashboard, dashboard/detail breadcrumb only
-      this.router.navigate(['/dashboard']);
-    }
+  if (this.previousPage === 'postApartment') {
+    this.router.navigate(['/apartment/post-apartment'], {
+      state: {
+        returnFromPost: true,
+        apartmentData: this.apartmentData
+      }
+    });
+  } else {
+    this.router.navigate(['/dashboard']);
   }
+}
+
 
   nextImage(): void {
     if (this.apartmentData?.images) {

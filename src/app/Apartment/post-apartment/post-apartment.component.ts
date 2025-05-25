@@ -182,7 +182,7 @@ export class PostApartmentComponent implements OnInit {
     this.apartmentService.setApartmentData(this.previewApartmentData);
     this.router.navigate(['/apartment/apartment-detail', this.previewApartmentData.id || 'preview'], {
       state: { apartmentData: this.previewApartmentData },
-      queryParams: { fromPreview: true }
+      queryParams: { fromPostApartment: true }
     });
   }
 
