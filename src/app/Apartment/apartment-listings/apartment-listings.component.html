@@ -1,7 +1,7 @@
 <!-- Favorite Carousel -->
-<div class="carousel-container" *ngIf="showCarousel">
-  <div class="carousel">
-    <div class="carousel-item" *ngFor="let apt of favoriteApartments">
+<div class="favorite-carousel-container" *ngIf="showCarousel">
+  <div class="favorite-carousel">
+    <div class="favorite-carousel-item" *ngFor="let apt of favoriteApartments">
       <div class="card">
         <img
           [src]="apt.images[0]"
