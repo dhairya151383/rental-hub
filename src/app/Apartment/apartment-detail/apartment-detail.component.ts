@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ApartmentService } from '../../Shared/services/apartment.service';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -27,34 +27,56 @@ export class ApartmentDetailComponent implements OnInit, OnDestroy {
     private apartmentService: ApartmentService,
     private router: Router,
     private route: ActivatedRoute,
-    private navService:NavService
-  ) {}
+    private navService: NavService,
+    private cdr: ChangeDetectorRef
+  ) { }
 
   ngOnInit(): void {
+    const routeId = this.route.snapshot.paramMap.get('id');
     this.route.queryParams.subscribe(params => {
-      // Detect the page user came from via query params
-      // If navigated from post-apartment, param fromPostApartment=true will be set
-      if (params['fromPostApartment'] === 'true') {
-        this.previousPage = 'postApartment';
-      } else {
-        // Default to dashboard if no specific param
-        this.previousPage = 'dashboard';
-      }
-    });
+      this.previousPage = params['fromPostApartment'] === 'true' ? 'postApartment' : 'dashboard';
+      this.subscription = this.apartmentService.currentApartmentData.subscribe(data => {
+        this.apartmentData = data;
+        if (this.apartmentData) {
+          this.isFavorite = this.apartmentData.isFavorite || false;
+          console.log('1' + this.apartmentData)
+        } else {
+          if (routeId && routeId !== 'preview') {
+            this.apartmentService.getApartmentById(routeId).subscribe({
+              next: (apartment) => {
+                if (apartment) {
+                  this.apartmentData = apartment;
+                  this.isFavorite = apartment.isFavorite || false;
+                  this.cdr.detectChanges();
+                } else {
+                  this.router.navigate(['/dashboard']);
+                }
+              },
+              error: () => this.router.navigate(['/dashboard'])
+            });
+          } else {
+            this.router.navigate(['/dashboard']);
+          }
+        }
+      });
 
-    // Subscribe to the apartment data observable
-    this.subscription = this.apartmentService.currentApartmentData.subscribe(data => {
-      this.apartmentData = data;
-      if (this.apartmentData) {
-        this.isFavorite = this.apartmentData.isFavorite || false;
+      if (this.previousPage === 'postApartment') {
+        this.navService.setBreadcrumbs(['Post', 'Detail']);
+      } else {
+        this.navService.setBreadcrumbs(['Detail']);
       }
     });
+  }
+
+
+  private setBreadcrumbs() {
     if (this.previousPage === 'postApartment') {
-    this.navService.setBreadcrumbs(['Post', 'Detail']);
-  } else {
-    this.navService.setBreadcrumbs(['Detail']);
+      this.navService.setBreadcrumbs(['Post', 'Detail']);
+    } else {
+      this.navService.setBreadcrumbs(['Detail']);
+    }
   }
-  }
+
 
   ngOnDestroy(): void {
     if (this.subscription) {
@@ -70,17 +92,17 @@ export class ApartmentDetailComponent implements OnInit, OnDestroy {
   }
 
   goBack(): void {
-  if (this.previousPage === 'postApartment') {
-    this.router.navigate(['/apartment/post-apartment'], {
-      state: {
-        returnFromPost: true,
-        apartmentData: this.apartmentData
-      }
-    });
-  } else {
-    this.router.navigate(['/dashboard']);
+    if (this.previousPage === 'postApartment') {
+      this.router.navigate(['/apartment/post-apartment'], {
+        state: {
+          returnFromPost: true,
+          apartmentData: this.apartmentData
+        }
+      });
+    } else {
+      this.router.navigate(['/dashboard']);
+    }
   }
-}
 
 
   nextImage(): void {
@@ -123,3 +145,7 @@ export class ApartmentDetailComponent implements OnInit, OnDestroy {
     }
   }
 }
+function take(arg0: number): import("rxjs").OperatorFunction<import("@angular/router").Params, unknown> {
+  throw new Error('Function not implemented.');
+}
+

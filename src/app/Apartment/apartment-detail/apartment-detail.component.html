@@ -73,5 +73,7 @@
     </button>
   </div>
 
+  <ng-container *ngIf="apartmentData?.id">
   <app-apartment-comments [apartmentId]="apartmentData.id"></app-apartment-comments>
+</ng-container>
 </div>

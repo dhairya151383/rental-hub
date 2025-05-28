@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Apartment } from './../../core/models/apartment.model';
 import { BehaviorSubject, Observable, from, throwError } from 'rxjs';
-import { Firestore, collection, addDoc, collectionData, doc, updateDoc } from '@angular/fire/firestore';
+import { Firestore, collection, addDoc, collectionData, doc, updateDoc,docData } from '@angular/fire/firestore';
 import { CollectionReference, DocumentData } from 'firebase/firestore';
 import { catchError } from 'rxjs/operators';
 
@@ -47,5 +47,9 @@ export class ApartmentService {
   updateApartmentFavoriteStatus(apartmentId: string, isFavorite: boolean) {
     const apartmentDocRef = doc(this.firestore, 'apartments', apartmentId);
     return updateDoc(apartmentDocRef, { isFavorite });
+  }
+  getApartmentById(id: string): Observable<Apartment> {
+    const apartmentDocRef = doc(this.firestore, 'apartments', id);
+    return docData(apartmentDocRef, { idField: 'id' }) as Observable<Apartment>;
   }
 }

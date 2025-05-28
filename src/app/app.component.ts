@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
+import { AuthService } from './Shared/services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -10,17 +11,11 @@ import { filter } from 'rxjs';
 })
 export class AppComponent {
   title = 'RentalHub';
-  showNavbar = true;
+  authLoaded = false;
 
-  constructor(private router: Router) {
-    this.router.events
-      .pipe(filter(event => event instanceof NavigationEnd))
-      .subscribe((event: NavigationEnd) => {
-        const url = (event as NavigationEnd).urlAfterRedirects;
-        const hiddenRoutes = ['/login', '/register'];
-
-        // Use startsWith to account for query params or sub-routes
-        this.showNavbar = !hiddenRoutes.some(path => url.startsWith(path));
-      });
+  constructor(private authService: AuthService) {
+    this.authService.isAuthLoaded$.subscribe(loaded => {
+      this.authLoaded = loaded;
+    });
   }
 }

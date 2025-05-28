@@ -1,5 +1,10 @@
-<app-navbar *ngIf="showNavbar"></app-navbar>
-
-<div class="container mt-3">
+<!-- app.component.html -->
+<ng-container *ngIf="authLoaded; else loading">
   <router-outlet></router-outlet>
-</div>
+</ng-container>
+
+<ng-template #loading>
+  <div class="d-flex justify-content-center mt-5">
+    <div class="spinner-border" role="status"></div>
+  </div>
+</ng-template>

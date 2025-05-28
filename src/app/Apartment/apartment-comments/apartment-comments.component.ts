@@ -66,37 +66,45 @@ export class ApartmentCommentsComponent implements OnInit, OnDestroy, OnChanges 
   }
 
   private loadComments(): void {
-    if (!this.apartmentId) return;
+  if (!this.apartmentId) return;
 
-    this.commentSub = this.commentService.getCommentsForApartment(this.apartmentId).subscribe(
-      comments => {
-        this.comments$ = of(comments);
-        this.errorMessage = null;
+  // unsubscribe old subscriptions first
+  this.commentSub?.unsubscribe();
+  this.unsubscribeAllReplies();
 
-        // Unsubscribe old reply subscriptions to avoid duplicates
-        this.unsubscribeAllReplies();
+  // assign comments$ observable directly for async pipe to listen live
+  this.comments$ = this.commentService.getCommentsForApartment(this.apartmentId);
 
-        // Subscribe live to replies for each comment
-        for (const comment of comments) {
-          if (comment.id) {
-            this.replySubs[comment.id] = this.commentService.getRepliesForComment(comment.id).subscribe(replies => {
-              this.replies[comment.id!] = replies;
-            });
-          }
+  // subscribe to comments$ for replies handling and error
+  this.commentSub = this.comments$.subscribe({
+    next: (comments) => {
+      this.errorMessage = null;
+
+      // Unsubscribe old reply subscriptions to avoid duplicates
+      this.unsubscribeAllReplies();
+
+      // Subscribe live to replies for each comment
+      for (const comment of comments) {
+        if (comment.id) {
+          this.replySubs[comment.id] = this.commentService.getRepliesForComment(comment.id).subscribe(replies => {
+            this.replies[comment.id!] = replies;
+          });
         }
-      },
-      error => {
-        if (error instanceof Error) {
-          console.error('Error loading comments:', error.message);
-          this.errorMessage = error.message;
-        } else {
-          console.error('Unknown error loading comments:', error);
-          this.errorMessage = 'Failed to load comments.';
-        }
-        this.comments$ = of([]);
       }
-    );
-  }
+    },
+    error: (error) => {
+      if (error instanceof Error) {
+        console.error('Error loading comments:', error.message);
+        this.errorMessage = error.message;
+      } else {
+        console.error('Unknown error loading comments:', error);
+        this.errorMessage = 'Failed to load comments.';
+      }
+      this.comments$ = of([]);
+    }
+  });
+}
+
 
   async submitComment(): Promise<void> {
     this.errorMessage = null;

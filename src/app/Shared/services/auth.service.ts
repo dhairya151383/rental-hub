@@ -25,21 +25,26 @@ export class AuthService {
   private currentUserSubject = new BehaviorSubject<UserWithRole | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
-  constructor(private auth: Auth, private firestore: Firestore) {
-    onAuthStateChanged(this.auth, async (user) => {
-      try {
-        if (user) {
-          const userData = await this.fetchUserWithRole(user.uid);
-          this.currentUserSubject.next(userData);
-        } else {
-          this.currentUserSubject.next(null);
-        }
-      } catch (error) {
-        console.error('Auth state change error:', error);
+  private authLoadedSubject = new BehaviorSubject<boolean>(false);
+public isAuthLoaded$ = this.authLoadedSubject.asObservable();
+
+constructor(private auth: Auth, private firestore: Firestore) {
+  onAuthStateChanged(this.auth, async (user) => {
+    try {
+      if (user) {
+        const userData = await this.fetchUserWithRole(user.uid);
+        this.currentUserSubject.next(userData);
+      } else {
         this.currentUserSubject.next(null);
       }
-    });
-  }
+    } catch (error) {
+      console.error('Auth state change error:', error);
+      this.currentUserSubject.next(null);
+    } finally {
+      this.authLoadedSubject.next(true); // <-- Important: emit loaded true after processing
+    }
+  });
+}
 
   async register(email: string, password: string, role: string): Promise<void> {
     const cred = await createUserWithEmailAndPassword(this.auth, email, password);

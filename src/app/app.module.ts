@@ -17,6 +17,7 @@ import { provideFirestore, getFirestore } from '@angular/fire/firestore';
 import { SharedModule } from './Shared/shared.module';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
+import { LayoutComponent } from './layout/layout.component';
 
 @NgModule({
   declarations: [
@@ -24,6 +25,7 @@ import { RegisterComponent } from './register/register.component';
     LoginComponent,
     RegisterComponent,
     DashboardComponent,
+    LayoutComponent,
   ],
   imports: [
     BrowserModule,

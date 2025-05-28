@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { ApartmentService } from '../../Shared/services/apartment.service';
 import { Apartment } from '../../core/models/apartment.model';
 import { environment } from '../../../environments/environment.production';
@@ -10,7 +11,7 @@ import { environment } from '../../../environments/environment.production';
   templateUrl: './apartment-listings.component.html',
   styleUrls: ['./apartment-listings.component.css']
 })
-export class ApartmentListingsComponent implements OnInit {
+export class ApartmentListingsComponent implements OnInit, OnDestroy {
   apartments: Apartment[] = [];
   filteredApartments: Apartment[] = [];
   filterText: string = '';
@@ -20,35 +21,48 @@ export class ApartmentListingsComponent implements OnInit {
   showCarousel = false;
   defaultImageUrl: string = environment.defaultApartmentImage;
 
+  private apartmentsSub?: Subscription;
+
   constructor(
     private apartmentService: ApartmentService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef  // Inject ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
     this.loadApartments();
   }
 
+  ngOnDestroy(): void {
+    this.apartmentsSub?.unsubscribe();
+  }
+
   loadApartments(): void {
-    this.apartmentService.getApartments().subscribe({
+    // Unsubscribe from previous subscription if any
+    this.apartmentsSub?.unsubscribe();
+
+    this.apartmentsSub = this.apartmentService.getApartments().subscribe({
       next: (apts: Apartment[]) => {
-        console.log('Loaded apartments:', apts); // Debug log
+        console.log('Loaded apartments:', apts);
 
         if (!Array.isArray(apts)) {
           console.error('Invalid apartment data received:', apts);
           this.apartments = [];
           this.favoriteApartments = [];
           this.showCarousel = false;
+          this.cdr.detectChanges(); // Force update
           return;
         }
 
         this.apartments = apts.map(apartment => ({
           ...apartment,
           images: apartment.images?.length ? apartment.images : [this.defaultImageUrl],
-          isFavorite: apartment.isFavorite === true // explicitly convert to boolean
+          isFavorite: apartment.isFavorite === true
         }));
         this.updateFavoriteApartments();
         this.applyFilterAndSort();
+
+        this.cdr.detectChanges();
       },
       error: (err) => {
         alert('Error fetching apartment listings. Please try again later.');
@@ -56,13 +70,11 @@ export class ApartmentListingsComponent implements OnInit {
     });
   }
 
-
   updateFavoriteApartments(): void {
     this.favoriteApartments = this.apartments.filter(a => a.isFavorite);
     this.showCarousel = this.favoriteApartments.length > 0;
   }
 
-  
   async markAsFavorite(apartment: Apartment): Promise<void> {
     if (!apartment?.id) {
       alert('Invalid apartment data.');
@@ -70,15 +82,13 @@ export class ApartmentListingsComponent implements OnInit {
     }
     const newFavoriteStatus = !apartment.isFavorite;
     try {
-      // Await the backend update first
       await this.apartmentService.updateApartmentFavoriteStatus(apartment.id, newFavoriteStatus);
-      // Update local apartments list immutably
-      this.apartments = this.apartments.map(a => 
+      this.apartments = this.apartments.map(a =>
         a.id === apartment.id ? { ...a, isFavorite: newFavoriteStatus } : a
       );
-      // Refresh favorites list and carousel visibility
       this.updateFavoriteApartments();
       this.applyFilterAndSort();
+      this.cdr.detectChanges(); // Update UI after favorite change
     } catch (error) {
       console.error('Failed to update favorite status:', error);
       alert('Failed to update favorite status. Please try again.');
@@ -90,14 +100,12 @@ export class ApartmentListingsComponent implements OnInit {
       alert('Apartment details unavailable.');
       return;
     }
-
     this.apartmentService.setApartmentData(apartment);
     this.router.navigate(['/apartment/apartment-detail', apartment.id], { queryParams: { fromListing: true } });
   }
   applyFilterAndSort(): void {
     let result = [...this.apartments];
 
-    // Filter by text: title or streetAddress contains filterText (case insensitive)
     if (this.filterText.trim().length > 0) {
       const filter = this.filterText.toLowerCase();
       result = result.filter(apt =>
@@ -106,7 +114,6 @@ export class ApartmentListingsComponent implements OnInit {
       );
     }
 
-    // Sort
     switch (this.sortBy) {
       case 'rentAsc':
         result.sort((a, b) => a.expectedRent.expectedRent - b.expectedRent.expectedRent);
@@ -125,7 +132,6 @@ export class ApartmentListingsComponent implements OnInit {
     this.filteredApartments = result;
   }
 
-  // Triggered when filter input or sort changes
   onFilterChange(value: string): void {
     this.filterText = value;
     this.applyFilterAndSort();
