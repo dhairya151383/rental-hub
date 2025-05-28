@@ -1,38 +1,67 @@
 <h3>Comments</h3>
 
+<!-- Comment input -->
 <div style="margin-bottom: 20px;">
-  <label for="newComment" style="display: block; font-weight: bold; margin-bottom: 5px;">Leave a Comment</label>
-  <textarea id="newComment" [(ngModel)]="newComment" rows="4"
-            style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; resize: vertical; box-sizing: border-box; font-family: inherit;"></textarea>
-  <button (click)="submitComment()"
-          style="background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 8px; cursor: pointer; margin-top: 10px; font-size: 16px;">
-    Submit
-  </button>
+  <label for="newComment">Leave a Comment</label>
+  <textarea id="newComment" [(ngModel)]="newComment" rows="4"></textarea>
+  <button (click)="submitComment()">Submit</button>
 </div>
 
-<div *ngIf="errorMessage" style="color: red; margin-bottom: 15px; padding: 10px; border: 1px solid red; background-color: #ffebeb; border-radius: 8px;">
-  {{ errorMessage }}
-</div>
+<div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
 
-<div style="max-height: 420px; overflow-y: auto; border: 1px solid #eee; padding: 15px; border-radius: 8px; background-color: #f9f9f9;">
+<!-- Comments list -->
+<div class="comments-container">
+  <ng-container *ngIf="comments$ | async as comments">
+    <ng-container *ngFor="let comment of comments">
+      <ng-container *ngIf="comment?.id as commentId">
+        <div class="comment-container">
+          <img
+            [src]="comment.userImage || defaultUserImageUrl"
+            class="avatar"
+            alt="User Avatar"
+          />
+          <div class="comment-content">
+            <div class="user-info">
+              <span class="username">{{ comment.username }}</span>
+              <span class="timestamp">
+                {{ comment.timestamp?.toDate() | date: 'medium' }}
+              </span>
+            </div>
+            <p class="comment-text">{{ comment.text }}</p>
+            <button (click)="toggleReply(commentId)">Reply</button>
 
-  <div *ngIf="!(comments$ | async)?.length && !errorMessage">
-    <p style="text-align: center; color: #555;">No comments yet. Be the first to leave one!</p>
-  </div>
+            <!-- Reply input -->
+            <div *ngIf="replyToCommentId === commentId">
+              <textarea [(ngModel)]="replyText" rows="2"></textarea>
+              <button (click)="submitReply(commentId)">Post Reply</button>
+            </div>
 
-  <div *ngFor="let comment of (comments$ | async)">
-    <div style="display: flex; align-items: flex-start; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
-      <div style="margin-right: 10px; flex-shrink: 0;">
-        <img [src]="comment.userImage || defaultUserImageUrl" alt="User Avatar"
-             style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;">
-      </div>
-      <div style="flex-grow: 1;">
-        <div style="display: flex; align-items: center; margin-bottom: 5px; flex-wrap: wrap;">
-          <strong style="margin-right: 10px; color: #333;">{{ comment.username }}</strong>
-          <small style="color: #777; font-size: 0.85em;">{{ comment.timestamp?.toDate() | date:'medium' }}</small>
+            <!-- Replies -->
+            <ng-container *ngIf="replies && replies[commentId]?.length">
+              <div class="replies">
+                <ng-container *ngFor="let reply of replies[commentId]">
+                  <div class="comment-container reply">
+                    <img
+                      [src]="reply.userImage || defaultUserImageUrl"
+                      class="avatar"
+                      alt="Reply User Avatar"
+                    />
+                    <div class="comment-content">
+                      <div class="user-info">
+                        <span class="username">{{ reply.username }}</span>
+                        <span class="timestamp">
+                          {{ reply.timestamp?.toDate() | date: 'short' }}
+                        </span>
+                      </div>
+                      <p class="comment-text">{{ reply.text }}</p>
+                    </div>
+                  </div>
+                </ng-container>
+              </div>
+            </ng-container>
+          </div>
         </div>
-        <p style="margin: 0; color: #444; line-height: 1.4;">{{ comment.text }}</p>
-      </div>
-    </div>
-  </div>
+      </ng-container>
+    </ng-container>
+  </ng-container>
 </div>

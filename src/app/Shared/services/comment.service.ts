@@ -17,12 +17,27 @@ export class CommentService {
     const q = query(
       this.commentsCollection,
       where('apartmentId', '==', apartmentId),
+      where('parentCommentId', '==', null),
       orderBy('timestamp', 'desc')
     );
     return collectionData(q, { idField: 'id' }) as Observable<Comment[]>;
   }
 
-  addComment(comment: Comment): Promise<void> {
-    return addDoc(this.commentsCollection, comment).then(() => undefined);
+  getRepliesForComment(parentCommentId: string): Observable<Comment[]> {
+    const q = query(
+      this.commentsCollection,
+      where('parentCommentId', '==', parentCommentId),
+      orderBy('timestamp', 'asc')
+    );
+    return collectionData(q, { idField: 'id' }) as Observable<Comment[]>;
+  }
+
+  async addComment(comment: Comment): Promise<void> {
+    try {
+      await addDoc(this.commentsCollection, comment);
+    } catch (error) {
+      console.error('Failed to add comment:', error);
+      throw new Error('Could not submit comment.');
+    }
   }
 }
