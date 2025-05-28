@@ -30,10 +30,35 @@
 </div>
 
 <!-- All Listings -->
-<h2 *ngIf="!showCarousel">All Listings</h2>
+<h2>All Listings</h2>
+
+<!-- Filter and Sort Bar -->
+<div class="filter-sort-bar">
+  <input
+    type="text"
+    placeholder="Search by title or address..."
+    [(ngModel)]="filterText"
+    (input)="onFilterChange(filterText)"
+    aria-label="Filter apartments"
+    class="filter-input"
+  />
+
+  <select
+    [(ngModel)]="sortBy"
+    (change)="onSortChange(sortBy)"
+    aria-label="Sort apartments"
+    class="sort-select"
+  >
+    <option value="">Sort by</option>
+    <option value="rentAsc">Rent: Low to High</option>
+    <option value="rentDesc">Rent: High to Low</option>
+    <option value="sizeAsc">Size: Small to Large</option>
+    <option value="sizeDesc">Size: Large to Small</option>
+  </select>
+</div>
 
 <div class="listing-grid">
-  <div class="card" *ngFor="let apartment of apartments">
+  <div class="card" *ngFor="let apartment of filteredApartments">
     <img
       [src]="apartment.images[0]"
       [alt]="'Image of ' + apartment.title"
