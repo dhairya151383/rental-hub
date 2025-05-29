@@ -6,11 +6,16 @@ import { environment } from '../../../../environments/environment.production';
   providedIn: 'root'
 })
 export class CloudinaryService {
- private readonly cloudName = environment.cloudName;
-  private readonly uploadPreset = environment.uploadPreset;
+  private readonly cloudName: string = environment.cloudName;
+  private readonly uploadPreset: string = environment.uploadPreset;
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
+  /**
+   * Uploads an image to Cloudinary
+   * @param file - Image file to upload
+   * @returns Observable with the upload response
+   */
   uploadImage(file: File) {
     const url = `https://api.cloudinary.com/v1_1/${this.cloudName}/upload`;
 

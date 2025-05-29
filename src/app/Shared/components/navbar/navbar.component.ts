@@ -1,9 +1,15 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  ChangeDetectorRef
+} from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService } from './../../services/auth.service';
-import { NavService } from '../../services/nav.service';
 import { Subject } from 'rxjs';
 import { takeUntil, map } from 'rxjs/operators';
+
+import { AuthService } from './../../services/auth.service';
+import { NavService } from '../../services/nav.service';
 
 @Component({
   selector: 'app-navbar',
@@ -15,64 +21,77 @@ export class NavbarComponent implements OnInit, OnDestroy {
   breadcrumbs: string[] = [];
   showPostButton = false;
   userRole: 'admin' | 'user' | null = null;
-  private destroy$ = new Subject<void>();
+
+  private readonly destroy$ = new Subject<void>();
 
   constructor(
-    private navService: NavService,
-    private authService: AuthService,
-    private router: Router,
-    private cdr: ChangeDetectorRef
+    private readonly navService: NavService,
+    private readonly authService: AuthService,
+    private readonly router: Router,
+    private readonly cdr: ChangeDetectorRef
   ) {}
 
-  ngOnInit() {
-    // Breadcrumbs
+  ngOnInit(): void {
+    this.subscribeToBreadcrumbs();
+    this.subscribeToPostButtonVisibility();
+    this.subscribeToUserRole();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  async logout(): Promise<void> {
+    try {
+      await this.authService.logout();
+      this.router.navigate(['/login']);
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  }
+
+  goToPost(): void {
+    this.router.navigate(['/apartment/post-apartment']);
+  }
+
+  goToDashboard(): void {
+    this.router.navigate(['/dashboard']);
+  }
+
+  // Subscriptions below are separated for readability and single responsibility
+
+  private subscribeToBreadcrumbs(): void {
     this.navService.breadcrumbs$
       .pipe(takeUntil(this.destroy$))
       .subscribe(crumbs => {
         this.breadcrumbs = crumbs;
         this.cdr.detectChanges();
       });
+  }
 
-    // Show/hide "Post Apartment" button
+  private subscribeToPostButtonVisibility(): void {
     this.navService.showPostButton$
       .pipe(takeUntil(this.destroy$))
       .subscribe(show => {
         this.showPostButton = show;
         this.cdr.detectChanges();
       });
+  }
 
-    // Get user role
+  private subscribeToUserRole(): void {
     this.authService.currentUser$
       .pipe(
         takeUntil(this.destroy$),
-        map(user => user?.role === 'admin' || user?.role === 'user' ? user.role : null)
+        map(user =>
+          user?.role === 'admin' || user?.role === 'user'
+            ? user.role
+            : null
+        )
       )
       .subscribe(role => {
         this.userRole = role;
         this.cdr.detectChanges();
       });
-  }
-
-  async logout() {
-  try {
-    await this.authService.logout();
-    this.router.navigate(['/login']);
-  } catch (err) {
-    console.error('Logout failed:', err);
-  }
-}
-
-
-  goToPost() {
-    this.router.navigate(['/apartment/post-apartment']);
-  }
-
-  goToDashboard() {
-    this.router.navigate(['/dashboard']);
-  }
-
-  ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 }

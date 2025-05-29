@@ -1,0 +1,88 @@
+/* === NAVBAR CONTAINER === */
+.navbar {
+  position: relative;
+  height: 300px; /* Custom height */
+  padding: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start; /* Align content to top */
+  background-image: url('/assets/images/navbar-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+  color: #fff;
+  z-index: 10;
+}
+
+/* Background overlay for contrast */
+.navbar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1;
+}
+
+/* Ensure navbar content is above the overlay */
+.navbar > div {
+  position: relative;
+  z-index: 2;
+}
+
+/* === BREADCRUMB STYLES === */
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  font-size: 1.1rem;
+  color: #f1f1f1;
+  font-weight: 500;
+}
+
+.breadcrumb-item {
+  color: #f1f1f1;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.breadcrumb-item:hover {
+  color: #ffffff;
+}
+
+.breadcrumb-item.active {
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.breadcrumb-separator {
+  color: #cccccc;
+  font-weight: bold;
+  user-select: none;
+  margin: 0 0.4rem;
+}
+
+/* === BUTTON STYLES === */
+.ms-auto {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+button[mat-raised-button] {
+  background-color: #ff4081;
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(255, 64, 129, 0.4);
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+button[mat-raised-button]:hover {
+  background-color: #e73370;
+}
+
+button[mat-button][color="warn"] {
+  color: #f44336 !important;
+  font-weight: 600;
+}
