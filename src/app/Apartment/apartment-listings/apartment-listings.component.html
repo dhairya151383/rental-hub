@@ -1,28 +1,44 @@
 <!-- Favorite Carousel -->
 <div class="favorite-carousel-container" *ngIf="showCarousel">
+  <h3>Favorites</h3>
   <div class="favorite-carousel">
     <div class="favorite-carousel-item" *ngFor="let apt of favoriteApartments">
-      <div class="card">
-        <img
-          [src]="apt.images[0]"
-          [alt]="'Image of ' + apt.title"
-          class="card-image"
-        />
-        <button
-          (click)="markAsFavorite(apt)"
-          class="favorite-icon"
-          [title]="apt.isFavorite ? 'Unmark Favorite' : 'Mark as Favorite'"
-          aria-label="Toggle Favorite"
-        >
-          <i [class]="apt.isFavorite ? 'fas fa-heart' : 'far fa-heart'"></i>
-        </button>
-        <div class="card-info">
-          <h3>
+      <div class="favorite-card">
+        <!-- Top Section -->
+        <div class="favorite-card-image-wrapper">
+          <img
+            [src]="apt.images[0]"
+            [alt]="'Image of ' + apt.title"
+            class="favorite-card-image"
+          />
+          <button
+            (click)="markAsFavorite(apt)"
+            class="favorite-card-favorite-icon"
+            [title]="apt.isFavorite ? 'Unmark Favorite' : 'Mark as Favorite'"
+            aria-label="Toggle Favorite"
+          >
+            <i [class]="apt.isFavorite ? 'fas fa-heart' : 'far fa-heart'"></i>
+          </button>
+        </div>
+
+        <!-- Middle Section -->
+        <div class="favorite-card-info">
+          <h4 class="favorite-card-title">
             <span (click)="viewDetails(apt)" style="cursor: pointer;">{{ apt.title }}</span>
-          </h3>
-          <p>{{ apt.propertyLocation.streetAddress }}</p>
-          <p>${{ apt.expectedRent.expectedRent }}/month</p>
-          <p>{{ apt.propertyDetails.squareFeet }} Sqft</p>
+          </h4>
+          <p class="favorite-card-address" [title]="apt.propertyLocation.streetAddress">
+            {{ apt.propertyLocation.streetAddress }}
+          </p>
+          <p class="favorite-card-rent">${{ apt.expectedRent.expectedRent }}/month</p>
+        </div>
+
+        <!-- Bottom Section -->
+        <div class="favorite-card-footer">
+          <div class="favorite-footer-item">{{ apt.propertyDetails.squareFeet }} sqft</div>
+          <div class="favorite-footer-item">{{ apt.propertyDetails.beds }} beds</div>
+          <div class="favorite-footer-item">
+            {{ apt.isFurnished ? 'Furnished' : 'Unfurnished' }}
+          </div>
         </div>
       </div>
     </div>
@@ -57,6 +73,7 @@
   </select>
 </div>
 
+<!-- Listing Grid -->
 <div class="listing-grid">
   <div class="card" *ngFor="let apartment of filteredApartments">
     <img
@@ -76,7 +93,9 @@
       <h4>
         <span (click)="viewDetails(apartment)" style="cursor: pointer;">{{ apartment.title }}</span>
       </h4>
-      <p>{{ apartment.propertyLocation.streetAddress }}</p>
+      <p [title]="apartment.propertyLocation.streetAddress" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+        {{ apartment.propertyLocation.streetAddress }}
+      </p>
       <p>${{ apartment.expectedRent.expectedRent }}/month</p>
       <p>{{ apartment.propertyDetails.squareFeet }} Sqft</p>
     </div>
