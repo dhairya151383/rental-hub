@@ -1,35 +1,57 @@
-import { TestBed } from '@angular/core/testing';
-import { RouterModule } from '@angular/router';
+import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { AppComponent } from './app.component';
+import { AuthService } from './Shared/services/auth.service';
+import { of, BehaviorSubject } from 'rxjs';
+import { Mocked } from 'jest-mock';
 
 describe('AppComponent', () => {
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [
-        RouterModule.forRoot([])
-      ],
-      declarations: [
-        AppComponent
+  let component: AppComponent;
+  let fixture: ComponentFixture<AppComponent>;
+  let authService: Mocked<AuthService>;
+  let isAuthLoadedSubject: BehaviorSubject<boolean>;
+
+  beforeEach(() => {
+    isAuthLoadedSubject = new BehaviorSubject<boolean>(false);
+
+    // Create a mock AuthService
+    const authServiceMock: Mocked<AuthService> = {
+      isAuthLoaded$: isAuthLoadedSubject.asObservable() as Mocked<AuthService>['isAuthLoaded$'],
+      // Add other methods of AuthService if your component uses them
+    } as Mocked<AuthService>;
+
+    TestBed.configureTestingModule({
+      declarations: [AppComponent],
+      providers: [
+        { provide: AuthService, useValue: authServiceMock }
       ],
     }).compileComponents();
+
+    fixture = TestBed.createComponent(AppComponent);
+    component = fixture.componentInstance;
+    authService = TestBed.inject(AuthService) as Mocked<AuthService>;
   });
 
   it('should create the app', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
+    expect(component).toBeTruthy();
   });
 
   it(`should have as title 'RentalHub'`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app.title).toEqual('RentalHub');
+    expect(component.title).toEqual('RentalHub');
   });
 
-  it('should render title', () => {
-    const fixture = TestBed.createComponent(AppComponent);
+  it('should initialize authLoaded to false', () => {
+    expect(component.authLoaded).toBe(false); // Use toBe(false)
+  });
+
+  it('should update authLoaded when AuthService.isAuthLoaded$ emits true', () => {
+    isAuthLoadedSubject.next(true);
     fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, RentalHub');
+    expect(component.authLoaded).toBe(true); // Use toBe(true)
+  });
+
+  it('should update authLoaded when AuthService.isAuthLoaded$ emits false', () => {
+    isAuthLoadedSubject.next(false);
+    fixture.detectChanges();
+    expect(component.authLoaded).toBe(false); // Use toBe(false)
   });
 });
