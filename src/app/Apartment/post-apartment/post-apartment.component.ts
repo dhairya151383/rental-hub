@@ -21,7 +21,7 @@ export class PostApartmentComponent implements OnInit {
   finalImageUrls: string[] = [];
   selectedFilesToUpload: File[] = [];
 
-  apartmentBuildings = ['Sunshine Residency', 'Maple Heights', 'Ocean View'];
+  apartmentBuildings = ['Sunshine Residency', 'Maple Heights', 'Ocean View', 'Parkside Towers', 'Riverfront Apartments', 'Greenwood Estates', 'Central Plaza', 'Highland Villas', 'Valley Crest', 'The Belvedere', 'Oakwood Manor', 'Cedar Ridge']
   leaseTypes = ['Long term (6+ months)', 'Short term', 'Both'];
   allAmenities = [
     'Gym/Fitness Center', 'Swimming Pool', 'Park', 'Visitors Parking', 'Power Backup',
