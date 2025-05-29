@@ -1,4 +1,3 @@
-// comment.model.ts
 export interface Comment {
   id?: string;
   apartmentId: string;

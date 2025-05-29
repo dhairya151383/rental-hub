@@ -5,18 +5,11 @@ import {
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
-  User,
-  AuthError
 } from '@angular/fire/auth';
 import { Firestore, doc, setDoc, getDoc } from '@angular/fire/firestore';
 import { BehaviorSubject, from, Observable, of } from 'rxjs';
 import { switchMap, catchError } from 'rxjs/operators';
-
-interface UserWithRole {
-  uid: string;
-  email: string;
-  role: string;
-}
+import { UserWithRole } from '../../core/models/user.model';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -29,27 +22,29 @@ export class AuthService {
   constructor(private auth: Auth, private firestore: Firestore) {
     onAuthStateChanged(this.auth, async (user) => {
       try {
-        if (user) {
-          const userData = await this.fetchUserWithRole(user.uid);
-          this.currentUserSubject.next(userData);
-        } else {
-          this.currentUserSubject.next(null);
-        }
+        const userData = user ? await this.fetchUserWithRole(user.uid) : null;
+        this.currentUserSubject.next(userData);
       } catch (error) {
         console.error('Auth state change error:', error);
         this.currentUserSubject.next(null);
       } finally {
-        this.authLoadedSubject.next(true); 
+        this.authLoadedSubject.next(true);
       }
     });
   }
 
+  /**
+   * Registers a new user and assigns a role.
+   */
   async register(email: string, password: string, role: string): Promise<void> {
     const credentials = await createUserWithEmailAndPassword(this.auth, email, password);
     const userRef = doc(this.firestore, 'users', credentials.user.uid);
     await setDoc(userRef, { email, role });
   }
 
+  /**
+   * Logs in the user with email and password.
+   */
   async login(email: string, password: string): Promise<void> {
     try {
       await signInWithEmailAndPassword(this.auth, email, password);
@@ -63,29 +58,38 @@ export class AuthService {
         case 'auth/invalid-email':
           throw new Error('Invalid email format.');
         default:
-          throw new Error(error.message || 'Login failed.');
+          throw new Error(error?.message || 'Login failed.');
       }
     }
   }
 
+  /**
+   * Logs out the current user.
+   */
   async logout(): Promise<void> {
     await signOut(this.auth);
     this.currentUserSubject.next(null);
   }
 
+  /**
+   * Returns an observable of the current user with role, if available.
+   */
   getCurrentUserWithRole(): Observable<UserWithRole | null> {
     return of(this.auth.currentUser).pipe(
       switchMap(user => {
         if (!user) return of(null);
         return from(this.fetchUserWithRole(user.uid));
       }),
-      catchError(error => {
+            catchError(error => {
         console.error('Failed to fetch user with role:', error);
         return of(null);
       })
     );
   }
 
+  /**
+   * Fetches user details from Firestore using UID and includes the role.
+   */
   private async fetchUserWithRole(uid: string): Promise<UserWithRole | null> {
     const userRef = doc(this.firestore, 'users', uid);
     const docSnap = await getDoc(userRef);

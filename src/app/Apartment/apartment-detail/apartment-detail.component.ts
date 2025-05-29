@@ -35,7 +35,7 @@ export class ApartmentDetailComponent implements OnInit, OnDestroy {
     const routeId = this.route.snapshot.paramMap.get('id');
     this.route.queryParams.subscribe(params => {
       this.previousPage = params['fromPostApartment'] === 'true' ? 'postApartment' : 'dashboard';
-      this.subscription = this.apartmentService.currentApartmentData.subscribe(data => {
+      this.subscription = this.apartmentService.currentApartmentData$.subscribe(data => {
         this.apartmentData = data;
         if (this.apartmentData) {
           this.isFavorite = this.apartmentData.isFavorite || false;
