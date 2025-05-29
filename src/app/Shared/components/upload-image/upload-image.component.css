@@ -1,0 +1,49 @@
+/* Container for image previews */
+.image-preview-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem; /* space between images */
+}
+
+/* Each image wrapper to position close button */
+.image-wrapper {
+  position: relative;
+  width: 100px;
+  height: 100px;
+}
+
+/* Image styling */
+.image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  display: block;
+}
+
+/* Close (remove) button styling */
+.image-close-btn {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background-color: rgba(0, 0, 0, 0.6);
+  border: none;
+  border-radius: 50%;
+  color: white;
+  width: 20px;
+  height: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  line-height: 18px;
+  padding: 0;
+  text-align: center;
+  user-select: none;
+  transition: background-color 0.2s ease;
+}
+
+.image-close-btn:hover,
+.image-close-btn:focus {
+  background-color: rgba(255, 0, 0, 0.8);
+  outline: none;
+}
