@@ -1,39 +1,37 @@
-<div class="container mt-5">
-  <h1 class="mb-4">Create New Post</h1>
+<div class="post-apartment container">
+  <h1 class="post-apartment__title">Create New Post</h1>
 
-  <form *ngIf="apartmentForm" [formGroup]="apartmentForm" (ngSubmit)="onSubmit()" class="row g-3">
-    <div class="col-md-6">
-      <mat-form-field appearance="outline" class="w-100">
+  <form *ngIf="apartmentForm" [formGroup]="apartmentForm" (ngSubmit)="onSubmit()" class="post-apartment__form">
+    <h5>Choose your Apartment/Building</h5>
+    <!-- Apartment Selection -->
+    <div class="post-apartment__section form-apartment-name-row">
+      <mat-form-field appearance="outline" class="apartment-name-field">
         <mat-label>Choose your Apartment/Building</mat-label>
         <mat-select formControlName="apartmentBuilding">
-          <mat-option *ngFor="let building of apartmentBuildings" [value]="building">
-            {{ building }}
-          </mat-option>
+          <mat-option *ngFor="let building of apartmentBuildings" [value]="building">{{ building }}</mat-option>
         </mat-select>
         <mat-error *ngIf="getFormControl('apartmentBuilding')?.invalid">
           Apartment/Building is required.
         </mat-error>
       </mat-form-field>
-    </div>
 
-    <div class="col-md-6">
-      <mat-form-field appearance="outline" class="w-100">
+      <mat-form-field appearance="outline" class="apartment-name-field">
         <mat-label>Enter the name of your</mat-label>
         <input matInput formControlName="apartmentBuildingName" />
       </mat-form-field>
     </div>
-
-    <div class="col-12">
-      <label class="form-label">Is this a shared property?</label>
-      <mat-radio-group formControlName="isShared" class="d-flex">
-        <mat-radio-button value="true" class="me-2">Yes</mat-radio-button>
+    <!-- Shared Property -->
+    <div class="post-apartment__section">
+      <label class="post-apartment__label">Is this a shared property?</label>
+      <mat-radio-group formControlName="isShared" class="post-apartment__radio-group">
+        <mat-radio-button value="true">Yes</mat-radio-button>
         <mat-radio-button value="false">No</mat-radio-button>
       </mat-radio-group>
     </div>
-
-    <div class="col-12" formGroupName="propertyLocation">
-      <label class="form-label">Property Location</label>
-      <mat-form-field appearance="outline" class="w-100">
+    <h5>Property Location</h5>
+    <!-- Location -->
+    <div class="post-apartment__section" formGroupName="propertyLocation">
+      <mat-form-field appearance="outline" class="post-apartment__field">
         <mat-label>Street Address</mat-label>
         <input matInput formControlName="streetAddress" />
         <mat-error *ngIf="getFormControl('streetAddress', 'propertyLocation')?.invalid">
@@ -41,9 +39,10 @@
         </mat-error>
       </mat-form-field>
     </div>
-
-    <div class="col-md-3" formGroupName="propertyDetails">
-      <mat-form-field appearance="outline" class="w-100">
+    <h5>Property Details</h5>
+    <!-- Property Details -->
+    <div class="post-apartment__grid" formGroupName="propertyDetails">
+      <mat-form-field appearance="outline" class="post-apartment__field">
         <mat-label>No. of Beds</mat-label>
         <input matInput type="number" formControlName="beds" min="0" />
         <mat-error *ngIf="getFormControl('beds', 'propertyDetails')?.errors?.['required']">
@@ -53,10 +52,8 @@
           Number of beds must be at least 0.
         </mat-error>
       </mat-form-field>
-    </div>
 
-    <div class="col-md-3" formGroupName="propertyDetails">
-      <mat-form-field appearance="outline" class="w-100">
+      <mat-form-field appearance="outline" class="post-apartment__field">
         <mat-label>No. of Baths</mat-label>
         <input matInput type="number" formControlName="baths" min="0" />
         <mat-error *ngIf="getFormControl('baths', 'propertyDetails')?.errors?.['required']">
@@ -66,10 +63,8 @@
           Number of baths must be at least 0.
         </mat-error>
       </mat-form-field>
-    </div>
 
-    <div class="col-md-3" formGroupName="propertyDetails">
-      <mat-form-field appearance="outline" class="w-100">
+      <mat-form-field appearance="outline" class="post-apartment__field">
         <mat-label>Square Feet</mat-label>
         <input matInput type="number" formControlName="squareFeet" min="1" />
         <mat-error *ngIf="getFormControl('squareFeet', 'propertyDetails')?.errors?.['required']">
@@ -79,115 +74,87 @@
           Square Feet must be greater than 0.
         </mat-error>
       </mat-form-field>
-    </div>
 
-    <div class="col-md-3" formGroupName="propertyDetails">
-      <label class="form-label">Stay / Lease type</label>
-      <mat-radio-group formControlName="leaseType" class="d-flex flex-column">
-        <mat-radio-button value="Long term (6+ months)" class="mb-1">Long term (6+ months)</mat-radio-button>
-        <mat-radio-button value="Short term" class="mb-1">Short term</mat-radio-button>
-      </mat-radio-group>
-      <mat-error
-        *ngIf="getFormControl('leaseType', 'propertyDetails')?.invalid && getFormControl('leaseType', 'propertyDetails')?.touched">
-        Lease Type is required.
-      </mat-error>
+      <div class="post-apartment__lease-type">
+        <label class="post-apartment__label">Stay / Lease type</label>
+        <mat-radio-group formControlName="leaseType" class="post-apartment__radio-group-column">
+          <mat-radio-button value="Long term (6+ months)">Long term (6+ months)</mat-radio-button>
+          <mat-radio-button value="Short term">Short term</mat-radio-button>
+        </mat-radio-group>
+        <mat-error *ngIf="getFormControl('leaseType', 'propertyDetails')?.invalid && getFormControl('leaseType', 'propertyDetails')?.touched">
+          Lease Type is required.
+        </mat-error>
+      </div>
     </div>
-
-    <div class="col-md-4" formGroupName="expectedRent">
-      <label class="form-label">Expected Rent (/ per month)</label>
-      <mat-form-field appearance="outline" class="w-100">
+    <h5>Expected Rent</h5>
+    <!-- Expected Rent Section -->
+    <div class="post-apartment__section rent-checkbox-row" formGroupName="expectedRent">
+      <mat-form-field appearance="outline" class="expected-rent-field">
+        <mat-label>Expected Rent (/ per month)</mat-label>
         <input matInput type="number" formControlName="expectedRent" min="1" />
-        <mat-error *ngIf="getFormControl('expectedRent', 'expectedRent')?.errors?.['required']">
-          Expected Rent is required.
-        </mat-error>
-        <mat-error *ngIf="getFormControl('expectedRent', 'expectedRent')?.errors?.['min']">
-          Expected Rent must be greater than 0.
-        </mat-error>
       </mat-form-field>
+
+      <div class="expected-rent-checkboxes">
+        <mat-checkbox formControlName="negotiable">Negotiable</mat-checkbox>
+        <mat-checkbox formControlName="utilitiesIncluded">Utilities included in rent</mat-checkbox>
+      </div>
     </div>
 
-    <div class="col-md-4">
-      <label class="form-label mt-2">Utilities included in rent</label>
-      <mat-checkbox formControlName="utilitiesIncluded">Yes</mat-checkbox>
-    </div>
-
-    <div class="col-md-4" formGroupName="expectedRent">
-      <mat-checkbox formControlName="negotiable">Negotiable</mat-checkbox>
-    </div>
-
-    <div class="col-12">
-      <label class="form-label">Is the room/apartment furnished?</label>
-      <mat-radio-group formControlName="isFurnished" class="d-flex">
-        <mat-radio-button value="true" class="me-2">Yes</mat-radio-button>
+    <!-- Furnished -->
+    <div class="post-apartment__section">
+      <label class="post-apartment__label">Is the room/apartment furnished?</label>
+      <mat-radio-group formControlName="isFurnished" class="post-apartment__radio-group">
+        <mat-radio-button value="true">Yes</mat-radio-button>
         <mat-radio-button value="false">No</mat-radio-button>
       </mat-radio-group>
     </div>
 
-    <div class="col-12">
-      <label class="form-label">Amenities included</label>
-      <div class="row">
-        <div class="col-md-3 col-sm-6" *ngFor="let amenity of allAmenities; let i = index">
-          <mat-checkbox [formControl]="getAmenityControl(i)">
-            {{ amenity.name }}
-          </mat-checkbox>
+    <!-- Amenities -->
+    <div class="post-apartment__section">
+      <label class="post-apartment__label">Amenities included</label>
+      <div class="post-apartment__amenities">
+        <div *ngFor="let amenity of allAmenities; let i = index" class="post-apartment__amenity">
+          <mat-checkbox [formControl]="getAmenityControl(i)">{{ amenity.name }}</mat-checkbox>
         </div>
       </div>
     </div>
-
-    <div class="col-md-6">
-      <mat-form-field appearance="outline" class="w-100">
+    <h5>Contact Info</h5>
+    <!-- Contact Info -->
+    <div class="post-apartment__grid">
+      <mat-form-field appearance="outline" class="post-apartment__field">
         <mat-label>Contact Name</mat-label>
         <input matInput formControlName="contactName" required />
-        <mat-error *ngIf="getFormControl('contactName')?.invalid">
-          Contact Name is required.
-        </mat-error>
+        <mat-error *ngIf="getFormControl('contactName')?.invalid">Contact Name is required.</mat-error>
       </mat-form-field>
-    </div>
 
-    <div class="col-md-6">
-      <mat-form-field appearance="outline" class="w-100">
+      <mat-form-field appearance="outline" class="post-apartment__field">
         <mat-label>Contact Email</mat-label>
         <input matInput formControlName="contactEmail" [email]="true" required />
-        <mat-error *ngIf="getFormControl('contactEmail')?.hasError('required')">
-          Contact Email is required.
-        </mat-error>
-        <mat-error *ngIf="getFormControl('contactEmail')?.hasError('email')">
-          Please enter a valid email address.
-        </mat-error>
+        <mat-error *ngIf="getFormControl('contactEmail')?.hasError('required')">Contact Email is required.</mat-error>
+        <mat-error *ngIf="getFormControl('contactEmail')?.hasError('email')">Please enter a valid email address.</mat-error>
       </mat-form-field>
     </div>
+    <h5>Description</h5>
+    <!-- Title & Description -->
+    <mat-form-field appearance="outline" class="post-apartment__field">
+      <mat-label>Title</mat-label>
+      <input matInput formControlName="title" required />
+      <mat-error *ngIf="getFormControl('title')?.invalid">Title is required.</mat-error>
+    </mat-form-field>
 
-    <div class="col-12">
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Title</mat-label>
-        <input matInput formControlName="title" required />
-        <mat-error *ngIf="getFormControl('title')?.invalid">
-          Title is required.
-        </mat-error>
-      </mat-form-field>
-    </div>
+    <mat-form-field appearance="outline" class="post-apartment__field">
+      <mat-label>Description (Max 1400 characters)</mat-label>
+      <textarea matInput formControlName="description" maxlength="1400"></textarea>
+      <mat-error *ngIf="getFormControl('description')?.errors?.['required']">Description is required.</mat-error>
+      <mat-error *ngIf="getFormControl('description')?.errors?.['maxlength']">Description cannot exceed 1400 characters.</mat-error>
+    </mat-form-field>
 
-    <div class="col-12">
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Description (Max 1400 characters)</mat-label>
-        <textarea matInput formControlName="description" maxlength="1400"></textarea>
-        <mat-error *ngIf="getFormControl('description')?.errors?.['required']">
-          Description is required.
-        </mat-error>
-        <mat-error *ngIf="getFormControl('description')?.errors?.['maxlength']">
-          Description cannot exceed 1400 characters.
-        </mat-error>
-      </mat-form-field>
-    </div>
+    <!-- Upload Image Component -->
+    <app-upload-image [existingImageUrls]="finalImageUrls" (filesSelected)="onFilesSelected($event)"></app-upload-image>
 
-    <div class="col-12">
-      <app-upload-image
-        [existingImageUrls]="finalImageUrls"
-        (filesSelected)="onFilesSelected($event)"
-      ></app-upload-image>
-    </div>
-    <div class="col-12 text-center">
-      <button mat-raised-button color="primary" type="submit" class="me-2">Submit</button>
+    <!-- Actions -->
+    <div class="post-apartment__actions">
+      <button mat-raised-button color="primary" type="submit">Submit</button>
       <button mat-button type="button" (click)="onPreview()">Preview</button>
     </div>
   </form>
