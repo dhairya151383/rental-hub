@@ -1,5 +1,5 @@
-import { Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { NavService } from './../Shared/services/nav.service';
 
 @Component({
@@ -11,12 +11,12 @@ import { NavService } from './../Shared/services/nav.service';
 export class DashboardComponent implements OnInit {
 
   constructor(
-    private router: Router,
-    private navService: NavService
+    private readonly router: Router,
+    private readonly navService: NavService
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.navService.setBreadcrumbs([]);
-    this.navService.setShowPostButton(true); 
+    this.navService.setShowPostButton(true);
   }
 }

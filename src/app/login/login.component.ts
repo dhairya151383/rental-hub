@@ -10,24 +10,28 @@ import { AuthService } from '../Shared/services/auth.service';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
-  loginForm: FormGroup = new FormGroup({
-    email: new FormControl(null, [Validators.required, Validators.email]),
-    password: new FormControl(null, [Validators.required]),
+  loginForm = new FormGroup({
+    email: new FormControl<string | null>(null, [Validators.required, Validators.email]),
+    password: new FormControl<string | null>(null, [Validators.required]),
   });
+  errorMessage: string | null = null;
 
   constructor(
     private authService: AuthService,
     private router: Router
-  ) {}
+  ) { }
 
-  login() {
-    if (!this.loginForm.valid) {
-      return;
-    }
+  async login(): Promise<void> {
+    if (this.loginForm.invalid) return;
 
     const { email, password } = this.loginForm.value;
-    this.authService.login(email, password)
-      .then(() => this.router.navigate(['/dashboard']))
-      .catch(err => console.error(err));
+    this.errorMessage = null;
+    try {
+      await this.authService.login(email!, password!);
+      this.router.navigate(['/dashboard']);
+    } catch (error: any) {
+      this.errorMessage = error?.message || 'Login failed.';
+      console.error('Login error:', error);
+    }
   }
 }

@@ -1,33 +1,53 @@
 <div class="container">
-    <div class="row justify-content-md-center">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title mb-4">Sign In</h5>
-                <form [formGroup]="loginForm" (ngSubmit)="login()">
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email address</label>
-                        <input type="email" class="form-control" id="email" formControlName="email"/>
-                        <div *ngIf="this.loginForm.get('email')?.touched && this.loginForm.get('email')?.hasError('required')">
-                            <small class="text-danger">Email is required</small>
-                        </div>
-                        <div *ngIf="this.loginForm.get('email')?.touched && this.loginForm.get('email')?.hasError('email')">
-                            <small class="text-danger">Email must be a valid Email</small>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="password" formControlName="password"/>
-                        <div *ngIf="this.loginForm.get('password')?.touched && this.loginForm.get('password')?.hasError('required')">
-                            <small class="text-danger">Password is required</small>
-                        </div>
-                    </div>
-                    <div class="d-grid gap-2">
-                        <button type="submit"
-                        [disabled]="!loginForm.valid" class="btn btn-primary btn-block">Login</button>
-                        <p class="text-center">Don't have an account?<a [routerLink]="['../register']">Register here</a></p>
-                    </div>
-                </form>
-            </div>
+  <div class="row justify-content-md-center">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title mb-4">Sign In</h5>
+        <div *ngIf="errorMessage" class="alert alert-danger">
+          {{ errorMessage }}
         </div>
+
+        <form [formGroup]="loginForm" (ngSubmit)="login()">
+          <div class="mb-3">
+            <label for="email" class="form-label">Email address</label>
+            <input
+              type="email"
+              class="form-control"
+              id="email"
+              formControlName="email"
+            />
+            <div *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.hasError('required')">
+              <small class="text-danger">Email is required</small>
+            </div>
+            <div *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.hasError('email')">
+              <small class="text-danger">Invalid email format</small>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input
+              type="password"
+              class="form-control"
+              id="password"
+              formControlName="password"/>
+            <div *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.hasError('required')">
+              <small class="text-danger">Password is required</small>
+            </div>
+          </div>
+          <div class="d-grid gap-2">
+            <button
+              type="submit"
+              class="btn btn-primary btn-block"
+              [disabled]="loginForm.invalid">
+              Login
+            </button>
+            <p class="text-center">
+              Don't have an account?
+              <a [routerLink]="['../register']">Register here</a>
+            </p>
+          </div>
+        </form>
+      </div>
     </div>
+  </div>
 </div>

@@ -49,16 +49,22 @@ export class AuthService {
     try {
       await signInWithEmailAndPassword(this.auth, email, password);
     } catch (error: any) {
+      let message = 'Login failed.';
       switch (error?.code) {
         case 'auth/user-not-found':
-          throw new Error('No user found with this email.');
+          message = 'No user found with this email.';
+          break;
         case 'auth/wrong-password':
-          throw new Error('Incorrect password.');
+          message = 'Incorrect password.';
+          break;
         case 'auth/invalid-email':
-          throw new Error('Invalid email format.');
+          message = 'Invalid email format.';
+          break;
         default:
-          throw new Error(error?.message || 'Login failed.');
+          message = 'Invalid credentials';
+          break;
       }
+      throw new Error(message);
     }
   }
 
