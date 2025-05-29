@@ -2,7 +2,7 @@
   <div class="header">
     <h1 class="title">{{ apartmentData.title }}</h1>
     <p class="location">
-      <i class="fas fa-map-marker-alt"></i> {{ apartmentData.propertyLocation?.streetAddress }}
+      <i class="fas fa-map-marker-alt"></i> {{ apartmentData.propertyLocation.streetAddress }}
     </p>
   </div>
 
@@ -29,10 +29,10 @@
     <div class="overview-badges">
       <div class="badge"><i class="fas fa-bed"></i> {{ getBeds() }} Beds</div>
       <div class="badge"><i class="fas fa-bath"></i> {{ getBaths() }} Baths</div>
-      <div class="badge"><i class="fas fa-ruler-combined"></i> {{ apartmentData.propertyDetails?.squareFeet | number }} sqft</div>
+      <div class="badge"><i class="fas fa-ruler-combined"></i> {{ apartmentData.propertyDetails.squareFeet | number }} sqft</div>
     </div>
     <div class="price">
-      ${{ apartmentData.expectedRent?.expectedRent | number }}
+      ${{ apartmentData.expectedRent.expectedRent | number }}
       <span class="per-month">Per month</span>
     </div>
   </div>
@@ -54,11 +54,11 @@
       <h3 class="section-title">Property Details</h3>
       <p *ngIf="apartmentData.isShared"><strong>Shared Property:</strong> Yes</p>
       <p *ngIf="!apartmentData.isShared"><strong>Shared Property:</strong> No</p>
-      <p *ngIf="apartmentData.propertyDetails?.leaseType"><strong>Lease Type:</strong> {{ apartmentData.propertyDetails.leaseType }}</p>
+      <p *ngIf="apartmentData.propertyDetails.leaseType"><strong>Lease Type:</strong> {{ apartmentData.propertyDetails.leaseType }}</p>
       <p><strong>No. of Beds:</strong> {{ getBeds() }}</p>
       <p><strong>No. of Baths:</strong> {{ getBaths() }}</p>
-      <p *ngIf="apartmentData.expectedRent?.negotiable !== undefined"><strong>Negotiable:</strong> {{ apartmentData.expectedRent.negotiable ? 'Yes' : 'No' }}</p>
-      <p><strong>Expected Rent:</strong> ${{ apartmentData.expectedRent?.expectedRent | number }} per month</p>
+      <p *ngIf="apartmentData.expectedRent.negotiable !== undefined"><strong>Negotiable:</strong> {{ apartmentData.expectedRent.negotiable ? 'Yes' : 'No' }}</p>
+      <p><strong>Expected Rent:</strong> ${{ apartmentData.expectedRent.expectedRent | number }} per month</p>
       <p *ngIf="apartmentData.utilitiesIncluded !== undefined"><strong>Utilities Included:</strong> {{ apartmentData.utilitiesIncluded ? 'Yes' : 'No' }}</p>
       <p *ngIf="apartmentData.isFurnished !== undefined"><strong>Furnished:</strong> {{ apartmentData.isFurnished ? 'Yes' : 'No' }}</p>
 
@@ -73,7 +73,7 @@
     </button>
   </div>
 
-  <ng-container *ngIf="apartmentData?.id">
+  <ng-container *ngIf="apartmentData.id">
   <app-apartment-comments [apartmentId]="apartmentData.id"></app-apartment-comments>
 </ng-container>
 </div>

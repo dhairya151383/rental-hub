@@ -81,12 +81,12 @@
           <mat-radio-button value="Long term (6+ months)">Long term (6+ months)</mat-radio-button>
           <mat-radio-button value="Short term">Short term</mat-radio-button>
         </mat-radio-group>
-        <mat-error *ngIf="getFormControl('leaseType', 'propertyDetails')?.invalid && getFormControl('leaseType', 'propertyDetails')?.touched">
+        <mat-error
+          *ngIf="getFormControl('leaseType', 'propertyDetails')?.invalid && getFormControl('leaseType', 'propertyDetails')?.touched">
           Lease Type is required.
         </mat-error>
       </div>
     </div>
-    <h5>Expected Rent</h5>
     <!-- Expected Rent Section -->
     <div class="post-apartment__section rent-checkbox-row" formGroupName="expectedRent">
       <mat-form-field appearance="outline" class="expected-rent-field">
@@ -96,8 +96,11 @@
 
       <div class="expected-rent-checkboxes">
         <mat-checkbox formControlName="negotiable">Negotiable</mat-checkbox>
-        <mat-checkbox formControlName="utilitiesIncluded">Utilities included in rent</mat-checkbox>
       </div>
+    </div>
+
+    <div class="expected-rent-checkboxes">
+      <mat-checkbox formControlName="utilitiesIncluded">Utilities included in rent</mat-checkbox>
     </div>
 
     <!-- Furnished -->
@@ -131,7 +134,8 @@
         <mat-label>Contact Email</mat-label>
         <input matInput formControlName="contactEmail" [email]="true" required />
         <mat-error *ngIf="getFormControl('contactEmail')?.hasError('required')">Contact Email is required.</mat-error>
-        <mat-error *ngIf="getFormControl('contactEmail')?.hasError('email')">Please enter a valid email address.</mat-error>
+        <mat-error *ngIf="getFormControl('contactEmail')?.hasError('email')">Please enter a valid email
+          address.</mat-error>
       </mat-form-field>
     </div>
     <h5>Description</h5>
@@ -146,7 +150,8 @@
       <mat-label>Description (Max 1400 characters)</mat-label>
       <textarea matInput formControlName="description" maxlength="1400"></textarea>
       <mat-error *ngIf="getFormControl('description')?.errors?.['required']">Description is required.</mat-error>
-      <mat-error *ngIf="getFormControl('description')?.errors?.['maxlength']">Description cannot exceed 1400 characters.</mat-error>
+      <mat-error *ngIf="getFormControl('description')?.errors?.['maxlength']">Description cannot exceed 1400
+        characters.</mat-error>
     </mat-form-field>
 
     <!-- Upload Image Component -->

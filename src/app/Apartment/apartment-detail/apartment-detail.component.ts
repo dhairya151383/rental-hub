@@ -1,10 +1,15 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  ChangeDetectorRef
+} from '@angular/core';
 import { Subscription } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ApartmentService } from '../../Shared/services/apartment.service';
-import { Router, ActivatedRoute } from '@angular/router';
+import { NavService } from '../../Shared/services/nav.service';
 import { Apartment } from './../../core/models/apartment.model';
 import { environment } from '../../../environments/environment.production';
-import { NavService } from '../../Shared/services/nav.service';
 
 @Component({
   selector: 'app-apartment-detail',
@@ -13,15 +18,14 @@ import { NavService } from '../../Shared/services/nav.service';
   styleUrls: ['./apartment-detail.component.css']
 })
 export class ApartmentDetailComponent implements OnInit, OnDestroy {
-  apartmentData: Apartment | any;
-  private subscription: Subscription | undefined;
+  apartmentData: Apartment | null = null;
+  private subscription?: Subscription;
   currentImageIndex = 0;
-  defaultImageUrl: string = environment.defaultApartmentImage;
-  isFavorite: boolean = false;
+  readonly defaultImageUrl: string = environment.defaultApartmentImage;
+  isFavorite = false;
 
-  // This keeps track of where user came from for breadcrumb/navigation logic
   previousPage: 'dashboard' | 'postApartment' | null = null;
-  activeTab: 'overview' | 'details' = 'overview'; // Initially show overview
+  activeTab: 'overview' | 'details' = 'overview';
 
   constructor(
     private apartmentService: ApartmentService,
@@ -29,66 +33,58 @@ export class ApartmentDetailComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private navService: NavService,
     private cdr: ChangeDetectorRef
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     const routeId = this.route.snapshot.paramMap.get('id');
+
     this.route.queryParams.subscribe(params => {
       this.previousPage = params['fromPostApartment'] === 'true' ? 'postApartment' : 'dashboard';
+      this.setBreadcrumbs();
+
       this.subscription = this.apartmentService.currentApartmentData$.subscribe(data => {
-        this.apartmentData = data;
-        if (this.apartmentData) {
-          this.isFavorite = this.apartmentData.isFavorite || false;
-          console.log('1' + this.apartmentData)
+        if (data) {
+          this.apartmentData = data;
+          this.isFavorite = data.isFavorite || false;
+        } else if (routeId && routeId !== 'preview') {
+          this.loadApartmentById(routeId);
         } else {
-          if (routeId && routeId !== 'preview') {
-            this.apartmentService.getApartmentById(routeId).subscribe({
-              next: (apartment) => {
-                if (apartment) {
-                  this.apartmentData = apartment;
-                  this.isFavorite = apartment.isFavorite || false;
-                  this.cdr.detectChanges();
-                } else {
-                  this.router.navigate(['/dashboard']);
-                }
-              },
-              error: () => this.router.navigate(['/dashboard'])
-            });
-          } else {
-            this.router.navigate(['/dashboard']);
-          }
+          this.redirectToDashboard();
         }
       });
-
-      if (this.previousPage === 'postApartment') {
-        this.navService.setBreadcrumbs(['Post', 'Detail']);
-      } else {
-        this.navService.setBreadcrumbs(['Detail']);
-      }
     });
   }
 
-
-  private setBreadcrumbs() {
-    if (this.previousPage === 'postApartment') {
-      this.navService.setBreadcrumbs(['Post', 'Detail']);
-    } else {
-      this.navService.setBreadcrumbs(['Detail']);
-    }
+  private loadApartmentById(id: string): void {
+    this.apartmentService.getApartmentById(id).subscribe({
+      next: (apartment) => {
+        if (apartment) {
+          this.apartmentData = apartment;
+          this.isFavorite = apartment.isFavorite || false;
+          this.cdr.detectChanges();
+        } else {
+          this.redirectToDashboard();
+        }
+      },
+      error: () => this.redirectToDashboard()
+    });
   }
 
+  private setBreadcrumbs(): void {
+    const breadcrumbs = this.previousPage === 'postApartment' ? ['Post', 'Detail'] : ['Detail'];
+    this.navService.setBreadcrumbs(breadcrumbs);
+  }
+
+  private redirectToDashboard(): void {
+    this.router.navigate(['/dashboard']);
+  }
 
   ngOnDestroy(): void {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
+    this.subscription?.unsubscribe();
   }
 
-  getAmenities(amenities: string[]): string {
-    if (!amenities || amenities.length === 0) {
-      return 'No amenities listed';
-    }
-    return amenities.join(', ');
+  getAmenities(amenities: string[] = []): string {
+    return amenities.length ? amenities.join(', ') : 'No amenities listed';
   }
 
   goBack(): void {
@@ -100,20 +96,20 @@ export class ApartmentDetailComponent implements OnInit, OnDestroy {
         }
       });
     } else {
-      this.router.navigate(['/dashboard']);
+      this.redirectToDashboard();
     }
   }
 
-
   nextImage(): void {
-    if (this.apartmentData?.images) {
+    if (this.apartmentData?.images?.length) {
       this.currentImageIndex = (this.currentImageIndex + 1) % this.apartmentData.images.length;
     }
   }
 
   prevImage(): void {
-    if (this.apartmentData?.images) {
-      this.currentImageIndex = (this.currentImageIndex - 1 + this.apartmentData.images.length) % this.apartmentData.images.length;
+    if (this.apartmentData?.images?.length) {
+      this.currentImageIndex =
+        (this.currentImageIndex - 1 + this.apartmentData.images.length) % this.apartmentData.images.length;
     }
   }
 
@@ -122,17 +118,19 @@ export class ApartmentDetailComponent implements OnInit, OnDestroy {
   }
 
   getBeds(): number {
-    return this.apartmentData?.propertyDetails?.beds || 0;
+    return this.apartmentData?.propertyDetails?.beds ?? 0;
   }
 
   getBaths(): number {
-    return this.apartmentData?.propertyDetails?.baths || 0;
+    return this.apartmentData?.propertyDetails?.baths ?? 0;
   }
 
   toggleFavorite(): void {
     this.isFavorite = !this.isFavorite;
+
     if (this.apartmentData?.id) {
-      this.apartmentService.updateApartmentFavoriteStatus(this.apartmentData.id, this.isFavorite)
+      this.apartmentService
+        .updateApartmentFavoriteStatus(this.apartmentData.id, this.isFavorite)
         .then(() => {
           if (this.apartmentData) {
             this.apartmentData.isFavorite = this.isFavorite;
@@ -145,7 +143,3 @@ export class ApartmentDetailComponent implements OnInit, OnDestroy {
     }
   }
 }
-function take(arg0: number): import("rxjs").OperatorFunction<import("@angular/router").Params, unknown> {
-  throw new Error('Function not implemented.');
-}
-
