@@ -1,7 +1,7 @@
 .main-layout {
   padding: 2rem;
   margin-top: 1rem;
-  min-height: calc(100vh - 400px); /* Adjust based on navbar and footer */
+  min-height: calc(100vh - 160px); /* Adjust based on navbar and footer */
   background-color: #fafafa;
   font-family: 'Roboto', sans-serif;
 }

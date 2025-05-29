@@ -1,21 +1,23 @@
 /* === NAVBAR CONTAINER === */
 .navbar {
   position: relative;
-  height: 300px; /* Custom height */
   padding: 2rem;
   display: flex;
   justify-content: space-between;
   align-items: flex-start; /* Align content to top */
+  min-height: 200px; /* Use min-height for flexibility */
   background-image: url('/assets/images/navbar-bg.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  background-color: #000; /* Optional fallback */
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
   color: #fff;
   z-index: 10;
+  background-attachment: scroll; /* Ensure mobile friendliness */
 }
 
-/* Background overlay for contrast */
+/* Overlay for improved contrast */
 .navbar::before {
   content: '';
   position: absolute;
@@ -24,7 +26,7 @@
   z-index: 1;
 }
 
-/* Ensure navbar content is above the overlay */
+/* Ensure navbar content is above overlay */
 .navbar > div {
   position: relative;
   z-index: 2;
@@ -37,8 +39,8 @@
   flex-wrap: wrap;
   gap: 0.4rem;
   font-size: 1.1rem;
-  color: #f1f1f1;
   font-weight: 500;
+  color: #f1f1f1;
 }
 
 .breadcrumb-item {
@@ -73,8 +75,8 @@
 button[mat-raised-button] {
   background-color: #ff4081;
   color: #fff;
-  box-shadow: 0 2px 6px rgba(255, 64, 129, 0.4);
   font-weight: 500;
+  box-shadow: 0 2px 6px rgba(255, 64, 129, 0.4);
   transition: background-color 0.3s ease;
 }
 
