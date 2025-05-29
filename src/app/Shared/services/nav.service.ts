@@ -1,23 +1,36 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class NavService {
-  private breadcrumbsSubject = new BehaviorSubject<string[]>([]);
-  breadcrumbs$ = this.breadcrumbsSubject.asObservable();
+  // Subjects to hold the current state
+  private readonly breadcrumbsSubject = new BehaviorSubject<string[]>([]);
+  private readonly showPostButtonSubject = new BehaviorSubject<boolean>(false);
 
-  private showPostButtonSubject = new BehaviorSubject<boolean>(false);
-  showPostButton$ = this.showPostButtonSubject.asObservable();
+  // Public observables for components to subscribe to
+  readonly breadcrumbs$: Observable<string[]> = this.breadcrumbsSubject.asObservable();
+  readonly showPostButton$: Observable<boolean> = this.showPostButtonSubject.asObservable();
 
-  setBreadcrumbs(crumbs: string[]) {
+  /**
+   * Updates the breadcrumb navigation
+   * @param crumbs Array of breadcrumb strings
+   */
+  setBreadcrumbs(crumbs: string[]): void {
     this.breadcrumbsSubject.next(crumbs);
   }
 
-  setShowPostButton(show: boolean) {
+  /**
+   * Controls the visibility of the post button
+   * @param show Boolean flag to show/hide post button
+   */
+  setShowPostButton(show: boolean): void {
     this.showPostButtonSubject.next(show);
   }
 
-  resetNavState() {
+  /**
+   * Resets navigation state to default
+   */
+  resetNavState(): void {
     this.setBreadcrumbs([]);
     this.setShowPostButton(false);
   }
