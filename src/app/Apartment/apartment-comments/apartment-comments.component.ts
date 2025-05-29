@@ -20,8 +20,10 @@ import { AuthService } from '../../Shared/services/auth.service';
 })
 export class ApartmentCommentsComponent implements OnInit, OnDestroy, OnChanges {
   @Input() apartmentId: string | null = null;
+
   comments$: Observable<Comment[]> = of([]);
-  replies: { [commentId: string]: Comment[] } = {};
+  replies: Record<string, Comment[]> = {};
+
   newComment = '';
   replyText = '';
   replyToCommentId: string | null = null;
@@ -30,9 +32,9 @@ export class ApartmentCommentsComponent implements OnInit, OnDestroy, OnChanges 
 
   private authSub?: Subscription;
   private commentSub?: Subscription;
-  private replySubs: { [commentId: string]: Subscription } = {};
+  private replySubs: Record<string, Subscription> = {};
 
-  defaultUserImageUrl = 'https://res.cloudinary.com/dzinsxvvw/image/upload/v1748085949/default-user_ehi2qk.png';
+  readonly defaultUserImageUrl = 'https://res.cloudinary.com/dzinsxvvw/image/upload/v1748085949/default-user_ehi2qk.png';
 
   constructor(
     private commentService: CommentService,
@@ -40,74 +42,64 @@ export class ApartmentCommentsComponent implements OnInit, OnDestroy, OnChanges 
   ) {}
 
   ngOnInit(): void {
-    this.authSub = this.authService.currentUser$.subscribe(user => {
-      this.user = user;
-    });
+    this.authSub = this.authService.currentUser$.subscribe(user => (this.user = user));
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['apartmentId'] && this.apartmentId) {
-      this.commentSub?.unsubscribe();
-      // Unsubscribe existing reply subscriptions when apartment changes
-      this.unsubscribeAllReplies();
+      this.unsubscribeComments();
       this.loadComments();
     }
   }
 
   ngOnDestroy(): void {
+    this.unsubscribeComments();
+    this.unsubscribeAllReplies();
     this.authSub?.unsubscribe();
+  }
+
+  private unsubscribeComments(): void {
     this.commentSub?.unsubscribe();
     this.unsubscribeAllReplies();
   }
 
-  private unsubscribeAllReplies() {
+  private unsubscribeAllReplies(): void {
     Object.values(this.replySubs).forEach(sub => sub.unsubscribe());
     this.replySubs = {};
   }
 
   private loadComments(): void {
-  if (!this.apartmentId) return;
+    if (!this.apartmentId) return;
 
-  // unsubscribe old subscriptions first
-  this.commentSub?.unsubscribe();
-  this.unsubscribeAllReplies();
+    this.unsubscribeComments();
 
-  // assign comments$ observable directly for async pipe to listen live
-  this.comments$ = this.commentService.getCommentsForApartment(this.apartmentId);
+    // Assign observable for async pipe
+    this.comments$ = this.commentService.getCommentsForApartment(this.apartmentId);
 
-  // subscribe to comments$ for replies handling and error
-  this.commentSub = this.comments$.subscribe({
-    next: (comments) => {
-      this.errorMessage = null;
+    // Subscribe for replies and error handling
+    this.commentSub = this.comments$.subscribe({
+      next: comments => {
+        this.errorMessage = null;
+        this.unsubscribeAllReplies();
 
-      // Unsubscribe old reply subscriptions to avoid duplicates
-      this.unsubscribeAllReplies();
-
-      // Subscribe live to replies for each comment
-      for (const comment of comments) {
-        if (comment.id) {
-          this.replySubs[comment.id] = this.commentService.getRepliesForComment(comment.id).subscribe(replies => {
-            this.replies[comment.id!] = replies;
-          });
+        for (const comment of comments) {
+          if (comment.id) {
+            this.replySubs[comment.id] = this.commentService.getRepliesForComment(comment.id)
+              .subscribe(replies => (this.replies[comment.id!] = replies));
+          }
         }
+      },
+      error: error => {
+        this.errorMessage = error instanceof Error ? error.message : 'Failed to load comments.';
+        console.error('Error loading comments:', error);
+        this.comments$ = of([]);
       }
-    },
-    error: (error) => {
-      if (error instanceof Error) {
-        console.error('Error loading comments:', error.message);
-        this.errorMessage = error.message;
-      } else {
-        console.error('Unknown error loading comments:', error);
-        this.errorMessage = 'Failed to load comments.';
-      }
-      this.comments$ = of([]);
-    }
-  });
-}
-
+    });
+  }
 
   async submitComment(): Promise<void> {
     this.errorMessage = null;
+
     if (!this.validateInput(this.newComment)) return;
 
     try {
@@ -115,16 +107,13 @@ export class ApartmentCommentsComponent implements OnInit, OnDestroy, OnChanges 
       await this.commentService.addComment(comment);
       this.newComment = '';
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        this.errorMessage = err.message;
-      } else {
-        this.errorMessage = 'Failed to submit comment.';
-      }
+      this.handleError(err, 'Failed to submit comment.');
     }
   }
 
   async submitReply(parentCommentId: string): Promise<void> {
     this.errorMessage = null;
+
     if (!this.validateInput(this.replyText)) return;
 
     try {
@@ -132,13 +121,9 @@ export class ApartmentCommentsComponent implements OnInit, OnDestroy, OnChanges 
       await this.commentService.addComment(reply);
       this.replyText = '';
       this.replyToCommentId = null;
-      // No manual reload needed: reply subscription updates replies automatically
+      // Reply subscription updates automatically
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        this.errorMessage = err.message;
-      } else {
-        this.errorMessage = 'Failed to submit reply.';
-      }
+      this.handleError(err, 'Failed to submit reply.');
     }
   }
 
@@ -169,5 +154,13 @@ export class ApartmentCommentsComponent implements OnInit, OnDestroy, OnChanges 
       userImage: this.user?.photoURL || this.defaultUserImageUrl,
       parentCommentId: parentId
     };
+  }
+
+  private handleError(error: unknown, fallbackMessage: string): void {
+    if (error instanceof Error) {
+      this.errorMessage = error.message;
+    } else {
+      this.errorMessage = fallbackMessage;
+    }
   }
 }

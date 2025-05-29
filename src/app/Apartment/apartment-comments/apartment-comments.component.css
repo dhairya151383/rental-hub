@@ -1,6 +1,12 @@
+/* Layout Containers */
+.input-section {
+  margin-bottom: 20px;
+}
+
 .comments-container {
   margin-top: 30px;
 }
+
 .comment-container {
   display: flex;
   align-items: flex-start;
@@ -10,6 +16,15 @@
   border-radius: 12px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
+
+.comment-container.reply {
+  margin-left: 40px;
+  background-color: #f1f1f1;
+  border-left: 3px solid #ccc;
+  padding-left: 20px;
+}
+
+/* Avatar */
 .avatar {
   width: 48px;
   height: 48px;
@@ -17,41 +32,47 @@
   margin-right: 15px;
   object-fit: cover;
 }
+
+/* Comment Content */
 .comment-content {
   flex: 1;
 }
+
 .user-info {
   display: flex;
-  align-items: center;
   justify-content: space-between;
   font-size: 0.9rem;
   margin-bottom: 5px;
   color: #555;
 }
+
 .username {
   font-weight: bold;
   color: #333;
 }
+
 .timestamp {
   font-size: 0.8rem;
   color: #888;
 }
+
 .comment-text {
   font-size: 1rem;
   color: #222;
   margin-bottom: 8px;
 }
 
-/* Reply section */
+/* Reply Input */
+.reply-input {
+  margin-top: 10px;
+}
+
+/* Replies Block */
 .replies {
   margin-top: 10px;
 }
-.comment-container.reply {
-  margin-left: 40px;
-  background-color: #f1f1f1;
-  border-left: 3px solid #ccc;
-  padding-left: 20px;
-}
+
+/* Textareas */
 textarea {
   width: 100%;
   padding: 0.75rem;
@@ -63,6 +84,8 @@ textarea {
   margin-bottom: 10px;
   background-color: #fff;
 }
+
+/* Buttons */
 button {
   background-color: #007bff;
   color: white;
@@ -77,6 +100,8 @@ button {
 button:hover {
   background-color: #0056b3;
 }
+
+/* Error Message */
 .error-message {
   color: #b10000;
   background-color: #ffe6e6;
