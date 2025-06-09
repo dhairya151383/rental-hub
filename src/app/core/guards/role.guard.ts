@@ -19,11 +19,11 @@ export class RoleGuard implements CanActivate {
         if (user?.role === expectedRole) {
           return true;
         }
-        this.router.navigate(['/unauthorized']);
+        this.router.navigate(['/dashboard']);
         return false;
       }),
       catchError(() => {
-        this.router.navigate(['/unauthorized']);
+        this.router.navigate(['/dashboard']);
         return of(false);
       })
     );
