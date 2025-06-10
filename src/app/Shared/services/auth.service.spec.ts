@@ -8,7 +8,6 @@ import {
     onAuthStateChanged
 } from '@angular/fire/auth';
 import { Firestore, doc, setDoc, getDoc } from '@angular/fire/firestore';
-import { of, from } from 'rxjs';
 import { UserWithRole } from '../../core/models/user.model';
 
 jest.mock('@angular/fire/auth');
